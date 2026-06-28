@@ -11,9 +11,9 @@ Landing page สำหรับเกาะลิบง จังหวัดต
 
 ## GitHub Pages
 
-1. Push ไป branch `main` — Action จะ deploy ไฟล์ไป branch `gh-pages` อัตโนมัติ
-2. เปิด [Settings → Pages](https://github.com/goddarkmarketing/KOHLIBONG/settings/pages)
-3. **Source:** Deploy from a branch → **gh-pages** / **/ (root)** → Save
+1. เปิด [Settings → Pages](https://github.com/goddarkmarketing/KOHLIBONG/settings/pages)
+2. **Source:** เลือก **GitHub Actions** (ไม่ใช่ Deploy from a branch)
+3. Push ไป `main` แล้ว Action จะ deploy อัตโนมัติ
 
 URL: https://goddarkmarketing.github.io/KOHLIBONG/
 
