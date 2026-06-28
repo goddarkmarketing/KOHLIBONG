@@ -1,0 +1,662 @@
+/* ============================================================
+   เกาะลิบง.com — Landing Page
+   ============================================================ */
+
+@font-face{
+  font-family:'Better Together';
+  src:url('../better-together/BetterTogether-Light.woff2') format('woff2');
+  font-weight:300;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Better Together';
+  src:url('../better-together/BetterTogether-Regular.woff2') format('woff2');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Better Together';
+  src:url('../better-together/BetterTogether-Medium.woff2') format('woff2');
+  font-weight:500;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Better Together';
+  src:url('../better-together/BetterTogether-Bold.woff2') format('woff2');
+  font-weight:600;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Better Together';
+  src:url('../better-together/BetterTogether-Bold.woff2') format('woff2');
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Better Together';
+  src:url('../better-together/BetterTogether-Bold.woff2') format('woff2');
+  font-weight:800;
+  font-style:normal;
+  font-display:swap;
+}
+
+:root{
+  --font:'Better Together',system-ui,sans-serif;
+  --koh-red:#e63327;
+  --libong-blue:#1656c9;
+  --accent:#ff5b2e;          /* orange heading accent */
+  --accent-2:#ff8a3d;
+  --ocean:#0f7fb5;
+  --ocean-deep:#0a4d6e;
+  --purple:#5b3df5;
+  --blue:#2563eb;
+  --green:#22b14c;
+  --line:#06c755;
+  --ink:#1c2733;
+  --muted:#67788a;
+  --bg:#ffffff;
+  --bg-soft:#f4f8fb;
+  --bg-sky:#eef6fc;
+  --border:#e6edf3;
+  --radius:16px;
+  --shadow-sm:0 4px 14px rgba(16,42,67,.07);
+  --shadow:0 14px 38px rgba(16,42,67,.12);
+  --shadow-lg:0 26px 60px rgba(16,42,67,.18);
+  --max:1180px;
+  --header-h:64px;
+  --btn-h:42px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:var(--bg);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+button,input,select,textarea{font-family:var(--font)}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{width:100%;max-width:var(--max);margin-inline:auto;padding-inline:20px}
+
+/* ---------- Brand ---------- */
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand__logo{font-family:var(--font);font-weight:800;font-size:1.5rem;letter-spacing:.5px;line-height:1}
+.brand__koh{color:var(--koh-red)}
+.brand__libong{color:var(--libong-blue)}
+.brand__tag{font-size:.7rem;color:var(--muted);font-weight:400}
+.topbar .brand{flex-direction:row}
+.topbar .brand__logo{
+  display:inline-flex;align-items:baseline;
+  font-size:2rem;line-height:1.1;
+}
+.brand--mini .brand__logo{font-size:1.35rem}
+.brand--mini{flex-direction:row;gap:0;font-family:var(--font);font-weight:800;font-size:1.35rem}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  font-family:var(--font);font-weight:600;font-size:.95rem;line-height:1;
+  min-height:var(--btn-h);height:var(--btn-h);padding:0 1.35rem;
+  border-radius:999px;border:none;cursor:pointer;box-sizing:border-box;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+  white-space:nowrap;color:#fff;text-decoration:none;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn--sm{padding:0 1rem;font-size:.82rem}
+.btn--lg{padding:0 1.75rem;font-size:.95rem}
+.btn--login{background:linear-gradient(135deg,#ff4d4d,#e11d1d);box-shadow:0 6px 16px rgba(225,29,29,.35)}
+.btn--register{background:linear-gradient(135deg,#2ecf5f,#10a23f);box-shadow:0 6px 16px rgba(16,162,63,.35)}
+.btn--primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 10px 24px rgba(255,91,46,.4)}
+.btn--ghost{background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.7);backdrop-filter:blur(6px)}
+.btn--ghost:hover{background:rgba(255,255,255,.26)}
+.btn--ghost-dark{background:#fff;color:var(--ocean-deep);border:1.5px solid var(--border)}
+.btn--purple{background:linear-gradient(135deg,#6b4dff,#4f2fe0);box-shadow:0 10px 22px rgba(91,61,245,.35)}
+.btn--blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8);box-shadow:0 10px 22px rgba(37,99,235,.35)}
+.btn--green{background:linear-gradient(135deg,#2ecf5f,#10a23f);box-shadow:0 8px 18px rgba(16,162,63,.32)}
+.btn--call{background:#fff;color:var(--ocean-deep);border:1.5px solid var(--ocean);box-shadow:var(--shadow-sm)}
+.btn--call:hover{background:var(--bg-sky)}
+
+/* ---------- Social ---------- */
+.social{display:flex;gap:8px;align-items:center}
+.social__link{
+  width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  color:#fff;font-size:.85rem;transition:transform .2s ease,filter .2s ease;
+}
+.social__link:hover{transform:translateY(-2px) scale(1.06)}
+.s-fb{background:#1877f2}.s-ig{background:radial-gradient(circle at 30% 110%,#fdcb52,#e1306c 45%,#7232bd)}
+.s-tt{background:#010101}.s-line{background:#06c755}.s-yt{background:#ff0000}
+
+/* ---------- Lucide icons ---------- */
+.icon,
+.lucide{
+  width:1em;
+  height:1em;
+  stroke-width:2;
+  flex-shrink:0;
+}
+.btn .icon,.btn .lucide{width:1.1em;height:1.1em}
+.social__link .icon,.social__link .lucide,.social__link .social__icon{width:14px;height:14px;display:block}
+.nav__toggle .icon,.nav__toggle .lucide{width:22px;height:22px}
+.hero__arrow .icon,.hero__arrow .lucide{width:20px;height:20px}
+.to-top .icon,.to-top .lucide{width:20px;height:20px}
+.contact__list .icon,.contact__list .lucide{
+  width:18px;height:18px;color:var(--ocean);margin-top:4px;flex-shrink:0;
+}
+.contact__van-badge .icon,.contact__van-badge .lucide{width:1em;height:1em}
+.hotel-card .card__loc .icon,.hotel-card .card__loc .lucide{width:14px;height:14px;color:var(--muted)}
+.stars{display:inline-flex;align-items:center;gap:2px}
+.star-icon{display:inline-flex}
+.star-icon .icon,.star-icon .lucide{width:.85rem;height:.85rem;color:#f5a623}
+.star-icon--filled .lucide{fill:#f5a623;stroke:#f5a623}
+.star-icon:not(.star-icon--filled) .lucide{fill:none;stroke:#f5a623}
+
+/* ============================================================
+   TOP BAR + NAV
+   ============================================================ */
+.topbar{background:#fff;border-bottom:1px solid var(--border)}
+.topbar__inner{display:flex;align-items:center;justify-content:space-between;padding-block:8px;gap:16px}
+.topbar__right{display:flex;align-items:center;gap:12px}
+.topbar__member{font-size:.75rem;color:var(--muted)}
+
+.nav{
+  position:sticky;top:0;z-index:60;background:var(--ocean-deep);
+  box-shadow:0 6px 20px rgba(10,77,110,.25);
+}
+.nav__inner{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  min-height:var(--header-h);
+}
+.nav__bar{
+  display:flex;align-items:center;flex:1;min-width:0;gap:12px;
+}
+.nav .brand__tag{
+  flex:1;min-width:0;font-size:1.08rem;font-weight:600;color:rgba(255,255,255,.95);
+  letter-spacing:.01em;line-height:1.35;
+}
+.nav__menu{display:flex;gap:6px;margin-left:auto}
+.nav__menu a{
+  font-family:var(--font);font-weight:500;color:#eaf4fb;font-size:.95rem;
+  padding:.55rem .95rem;border-radius:999px;transition:background .2s ease,color .2s ease;
+}
+.nav__menu a:hover{background:rgba(255,255,255,.14)}
+.nav__toggle{
+  display:none;flex-shrink:0;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:#fff;width:42px;height:42px;border-radius:10px;cursor:pointer;
+  place-items:center;padding:0;
+}
+.nav__toggle-icon--close{display:none}
+.nav.is-open .nav__toggle-icon--open{display:none}
+.nav.is-open .nav__toggle-icon--close{display:block}
+.nav.is-open .nav__toggle{background:rgba(255,255,255,.2)}
+
+/* ============================================================
+   1. HERO
+   ============================================================ */
+.hero{
+  position:relative;height:clamp(400px,68svh,600px);
+  display:grid;place-items:center;overflow:hidden;color:#fff;text-align:center;
+}
+.hero__slides{position:absolute;inset:0}
+.hero__slide{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0;transform:scale(1.08);transition:opacity 1.2s ease,transform 6s ease;
+}
+.hero__slide.is-active{opacity:1;transform:scale(1)}
+.hero__overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,40,60,.35),rgba(8,35,55,.55) 55%,rgba(8,30,48,.75));
+}
+.hero__content{position:relative;z-index:2;padding:20px;max-width:760px}
+.hero__eyebrow{
+  font-family:var(--font);letter-spacing:3px;text-transform:uppercase;
+  font-size:.8rem;font-weight:500;opacity:.92;margin-bottom:.6rem;
+  text-shadow:0 2px 10px rgba(0,0,0,.4);
+}
+.hero__title{
+  font-family:var(--font);font-weight:800;line-height:1;
+  font-size:clamp(3.4rem,11vw,7rem);
+  text-shadow:0 8px 30px rgba(0,0,0,.45);
+}
+.hero__subtitle{
+  font-family:var(--font);font-weight:500;
+  font-size:clamp(1.3rem,4vw,2.2rem);margin-top:.2rem;
+  text-shadow:0 4px 18px rgba(0,0,0,.45);
+}
+.hero__actions{display:flex;gap:14px;justify-content:center;margin-top:1.8rem;flex-wrap:wrap}
+.hero__arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:3;
+  width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.18);color:#fff;font-size:1.1rem;
+  backdrop-filter:blur(6px);transition:background .2s ease;
+}
+.hero__arrow:hover{background:rgba(255,255,255,.35)}
+.hero__arrow--prev{left:18px}.hero__arrow--next{right:18px}
+.hero__dots{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:9px}
+.hero__dots button{
+  width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.45);transition:all .25s ease;
+}
+.hero__dots button.is-active{background:#fff;width:26px;border-radius:999px}
+
+/* hero entrance */
+.hero__eyebrow,.hero__title,.hero__subtitle,.hero__actions{
+  opacity:0;transform:translateY(24px);animation:heroUp .9s ease forwards;
+}
+.hero__title{animation-delay:.15s}
+.hero__subtitle{animation-delay:.3s}
+.hero__actions{animation-delay:.45s}
+@keyframes heroUp{to{opacity:1;transform:none}}
+
+/* ============================================================
+   SECTIONS / HEADINGS
+   ============================================================ */
+.section{padding:72px 0}
+.about.section{padding:0}
+.about{background:var(--bg)}
+.about__intro{
+  background:#f8f8f8;
+  padding:64px 0;
+}
+.about > .container{padding-top:56px;padding-bottom:72px}
+.tours{background:var(--bg-soft)}
+.boats{background:#fff}
+.hotels{background:var(--bg-sky)}
+.hotels > .container{overflow:visible}
+.reviews{background:var(--bg-soft)}
+.restaurants{background:#fff}
+.contact{background:var(--bg-soft)}
+
+.heading{
+  font-family:var(--font);font-weight:800;text-align:center;
+  font-size:clamp(1.9rem,4.5vw,2.8rem);margin-bottom:.4rem;color:var(--ocean-deep);
+}
+.heading--accent{
+  background:linear-gradient(135deg,var(--accent),#ff7a3d);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.about__lead{
+  max-width:880px;margin:0 auto;text-align:center;color:var(--muted);font-size:1.02rem;
+}
+.section__sub{
+  text-align:center;color:var(--muted);max-width:820px;margin:0 auto 2.4rem;font-size:.98rem;
+}
+.section__cta{text-align:center;margin-top:2.4rem}
+.section__cta--row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
+
+/* ============================================================
+   CARD GRIDS
+   ============================================================ */
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.cards-grid--4{grid-template-columns:repeat(4,1fr);align-items:stretch}
+
+.card{
+  background:#fff;border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow-sm);border:1px solid var(--border);
+  display:flex;flex-direction:column;transition:transform .28s ease,box-shadow .28s ease;
+}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.card__media{position:relative;aspect-ratio:16/11;overflow:hidden}
+.card__media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.card:hover .card__media img{transform:scale(1.07)}
+.card__badge{
+  position:absolute;top:10px;font-family:var(--font);font-weight:600;
+  font-size:.72rem;padding:.25rem .7rem;border-radius:999px;color:#fff;
+}
+.card__badge--left{left:10px;background:rgba(15,127,181,.92)}
+.card__badge--right{right:10px;background:var(--accent);}
+.card__badge--sale{right:10px;background:#e11d48}
+.card__body{padding:14px 15px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card__title{
+  font-family:var(--font);font-weight:600;font-size:1rem;color:var(--ink);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35;
+}
+.card__route{font-size:.82rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.card__meta{font-size:.72rem;color:#9aa9b8;margin-top:auto}
+.card__rating{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted)}
+.card__rating b{color:#f5a623;font-family:var(--font)}
+.card__price{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.card__price-old{color:#b9c4cf;text-decoration:line-through;font-size:.82rem}
+.card__price-new{color:var(--koh-red);font-family:var(--font);font-weight:700;font-size:1.15rem}
+
+/* ---- Boat cards ---- */
+.boat-card .card__body{align-items:center;text-align:center}
+.boat-card .card__desc{font-size:.8rem;color:var(--muted)}
+.boat-card .card__price-new{font-size:1.25rem}
+
+/* ---- Hotel cards ---- */
+.hotel-card{height:100%}
+.hotel-card__gallery{background:#e8edf2}
+.hotel-card__hero{
+  display:block;width:100%;border:none;padding:0;margin:0;cursor:pointer;
+  aspect-ratio:4/3;overflow:hidden;background:#dce4eb;
+}
+.hotel-card__hero img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.hotel-card__hero:hover img{transform:scale(1.04)}
+.hotel-card__thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.hotel-card__thumb{
+  position:relative;border:none;padding:0;margin:0;cursor:pointer;
+  aspect-ratio:4/3;overflow:hidden;background:#dce4eb;
+}
+.hotel-card__thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.hotel-card__thumb--more::after{
+  content:'';position:absolute;inset:0;background:rgba(0,0,0,.52);pointer-events:none;
+}
+.hotel-card__thumb-label{
+  position:absolute;inset:0;z-index:1;display:grid;place-items:center;
+  color:#fff;font-family:var(--font);font-weight:600;font-size:.62rem;
+  text-align:center;line-height:1.3;padding:4px;pointer-events:none;
+}
+.hotel-card .card__body{flex:1}
+.hotel-card .card__title{font-size:.92rem;min-height:2.7em}
+.hotel-card .card__loc{font-size:.76rem;color:var(--muted);display:flex;align-items:center;gap:5px}
+.hotel-card .amenities{display:flex;flex-wrap:wrap;gap:5px;min-height:1.6em}
+.hotel-card .amenities span{
+  font-size:.66rem;background:var(--bg-sky);color:var(--ocean);
+  padding:.15rem .5rem;border-radius:6px;
+}
+.hotel-card .card__desc{
+  font-size:.76rem;color:var(--muted);flex:1;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  min-height:3.6em;
+}
+.hotel-card .card__price{margin-top:auto}
+.hotel-card .btn{align-self:stretch;justify-content:center;margin-top:8px;min-height:var(--btn-h);height:var(--btn-h)}
+
+/* ---- Mini card slider (below hotels) ---- */
+.mini-slider-wrap{
+  position:relative;margin-top:2.2rem;width:100%;
+}
+.mini-slider{width:100%;min-width:0}
+.mini-slider__arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:2;
+  width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--border);background:#fff;color:var(--blue);
+  box-shadow:var(--shadow-sm);cursor:pointer;display:grid;place-items:center;padding:0;
+  transition:color .2s ease,box-shadow .2s ease,transform .2s ease,background .2s ease;
+}
+.mini-slider__arrow--prev{left:calc(-42px - 16px)}
+.mini-slider__arrow--next{right:calc(-42px - 16px)}
+.mini-slider__arrow .icon,.mini-slider__arrow .lucide{width:22px;height:22px;stroke-width:2.5}
+.mini-slider__arrow:hover{
+  color:var(--ocean-deep);background:var(--bg-sky);
+  box-shadow:var(--shadow);transform:translateY(-50%) scale(1.05);
+}
+.mini-slider__viewport{
+  overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.mini-slider__viewport::-webkit-scrollbar{display:none}
+.mini-slider__track{display:flex;gap:14px;padding:6px 2px 12px}
+.mini-slider__card{
+  flex:0 0 172px;width:172px;scroll-snap-align:start;
+  background:#fff;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(15,127,181,.1);
+  box-shadow:0 8px 24px rgba(16,42,67,.07);
+  text-decoration:none;color:inherit;
+  transition:transform .32s cubic-bezier(.4,0,.2,1),box-shadow .32s ease,border-color .32s ease;
+}
+.mini-slider__card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(15,127,181,.28);
+  box-shadow:0 18px 40px rgba(16,42,67,.14);
+}
+.mini-slider__media{
+  position:relative;aspect-ratio:16/10;overflow:hidden;
+  background:linear-gradient(145deg,#e8f4fc,#d5e6f2);
+}
+.mini-slider__media::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 45%,rgba(8,35,55,.22));
+  opacity:.85;transition:opacity .32s ease;
+}
+.mini-slider__card:hover .mini-slider__media::after{opacity:1}
+.mini-slider__media img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .5s cubic-bezier(.4,0,.2,1);
+}
+.mini-slider__card:hover .mini-slider__media img{transform:scale(1.1)}
+.mini-slider__tag{
+  position:absolute;top:8px;left:8px;z-index:1;
+  font-family:var(--font);font-size:.58rem;font-weight:600;
+  padding:.22rem .55rem;border-radius:999px;
+  color:#fff;background:rgba(15,127,181,.88);
+  backdrop-filter:blur(4px);
+  box-shadow:0 4px 10px rgba(10,77,110,.2);
+}
+.mini-slider__card-body{padding:11px 12px 13px}
+.mini-slider__card-title{
+  font-family:var(--font);font-weight:600;font-size:.74rem;color:var(--ink);line-height:1.42;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  margin:0;transition:color .25s ease;
+}
+.mini-slider__card:hover .mini-slider__card-title{color:var(--ocean-deep)}
+.mini-slider__card-meta{
+  display:flex;align-items:center;gap:6px;margin-top:7px;
+  font-size:.6rem;color:var(--muted);line-height:1.3;
+}
+.mini-slider__dot{
+  width:3px;height:3px;border-radius:50%;background:#c5d3de;flex-shrink:0;
+}
+
+/* ---- Gallery lightbox ---- */
+.gallery-lightbox{
+  position:fixed;inset:0;z-index:200;background:rgba(8,24,38,.88);
+  display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:1fr;
+  align-items:center;gap:12px;padding:20px 16px;
+}
+.gallery-lightbox[hidden]{display:none!important}
+.gallery-lightbox__figure{margin:0;max-width:min(960px,92vw);justify-self:center}
+.gallery-lightbox__img{
+  display:block;max-width:100%;max-height:78vh;width:auto;height:auto;margin:0 auto;
+  border-radius:12px;box-shadow:var(--shadow-lg);
+}
+.gallery-lightbox__caption{
+  margin-top:10px;text-align:center;color:#e8f0f6;font-size:.9rem;
+}
+.gallery-lightbox__close{
+  position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;
+  border:none;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;
+  display:grid;place-items:center;
+}
+.gallery-lightbox__prev,.gallery-lightbox__next{
+  width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;
+}
+.gallery-lightbox__close:hover,.gallery-lightbox__prev:hover,.gallery-lightbox__next:hover{
+  background:rgba(255,255,255,.28);
+}
+
+/* ---- Review cards ---- */
+.review-card{
+  background:#fff;border-radius:14px;padding:22px 18px;text-align:center;
+  box-shadow:var(--shadow-sm);border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  transition:transform .28s ease,box-shadow .28s ease;
+}
+.review-card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.review-card__text{font-size:.84rem;color:var(--muted);line-height:1.55}
+.review-card__avatar{width:78px;height:78px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:var(--shadow-sm)}
+.review-card__name{font-family:var(--font);font-weight:600;font-size:.9rem;color:var(--ink)}
+.review-card__sub{font-size:.76rem;color:var(--muted)}
+
+/* ============================================================
+   4. BOAT SCHEDULE
+   ============================================================ */
+.schedule{
+  width:100%;margin:0 auto 2.6rem;border-radius:14px;overflow:hidden;
+  box-shadow:var(--shadow-sm);border:1px solid var(--border);
+}
+.schedule__title{
+  background:var(--ocean-deep);color:#fff;font-family:var(--font);font-weight:600;
+  text-align:center;padding:.7rem 1rem;font-size:1rem;
+}
+.schedule__table{width:100%;border-collapse:collapse;background:#fff}
+.schedule__table th{
+  background:#5a6b78;color:#fff;font-family:var(--font);font-weight:500;
+  padding:.7rem;font-size:.88rem;border:1px solid #e3e9ee;
+}
+.schedule__table td{
+  padding:.7rem;text-align:center;font-size:.88rem;border:1px solid #e3e9ee;background:#f3f6f9;
+}
+.schedule__price{color:var(--koh-red);font-family:var(--font);font-weight:700;font-size:1.05rem}
+.schedule__note{
+  background:var(--ocean-deep);color:#fff;text-align:center;font-family:var(--font);
+  font-weight:500;padding:.7rem 1rem;font-size:.95rem;
+}
+
+/* ============================================================
+   8. CONTACT
+   ============================================================ */
+.contact__grid{display:grid;grid-template-columns:1.1fr 1.1fr .9fr;gap:30px;align-items:start}
+.contact__title{font-family:var(--font);font-weight:700;font-size:1.5rem;color:var(--ocean-deep);margin-bottom:14px}
+.contact__sub{font-family:var(--font);font-weight:600;font-size:1.25rem;color:var(--ocean);margin-bottom:8px}
+.contact__desc{color:var(--muted);font-size:.9rem;margin-bottom:16px}
+.contact__map{border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border);background:#e8eef3}
+.contact__map iframe{width:100%;height:280px;border:0;display:block;background:#e8eef3}
+.contact__map-link{
+  display:block;text-align:center;padding:8px 12px;font-size:.82rem;font-weight:600;
+  color:var(--ocean);background:#f4f8fb;border-top:1px solid var(--border);text-decoration:none;
+}
+.contact__map-link:hover{background:#eaf2f8}
+.contact__list{list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:18px}
+.contact__list li{display:flex;gap:12px;align-items:flex-start}
+.contact__list .icon,.contact__list .lucide{color:var(--ocean)}
+.contact__list small{color:var(--muted);font-weight:400}
+.contact__list span{font-family:var(--font);font-weight:600;color:var(--ink);font-size:.92rem}
+.contact__btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.contact__van{
+  position:relative;aspect-ratio:16/10;border-radius:14px;background-color:#e8eef3;background-size:cover;background-position:center;
+  box-shadow:var(--shadow-sm);margin-bottom:14px;
+}
+.contact__van-badge{
+  position:absolute;top:14px;left:14px;background:#fdd000;color:#222;
+  font-family:var(--font);font-weight:700;padding:.25rem .7rem;border-radius:6px;font-size:.85rem;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer{position:relative;color:#e9eef2;background:var(--ocean-deep);overflow:hidden}
+.footer::before{
+  content:"";position:absolute;inset:0;
+  background:url('https://images.pexels.com/photos/14573822/pexels-photo-14573822.jpeg?auto=compress&cs=tinysrgb&w=1200') center/cover;opacity:.18;
+}
+.footer__overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,77,110,.92),rgba(8,55,80,.96))}
+.footer__inner{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:30px;padding:56px 20px 36px}
+.footer__h{font-family:var(--font);font-weight:600;font-size:1rem;margin-bottom:12px;color:#fff}
+.footer__h--gap{margin-top:18px}
+.footer__col ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.footer__col ul a,.footer__plain li{font-size:.86rem;color:#cfe0ea;transition:color .2s ease}
+.footer__col ul a:hover{color:#fff}
+.footer__col--brand{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.footer__tag{font-size:.82rem;color:#cfe0ea}
+.brand__logo--lg{font-size:2rem}
+.brand__logo--lg .brand__koh{color:#ff5e54}.brand__logo--lg .brand__libong{color:#5aa6ff}
+.social--footer{margin-top:4px}
+.footer__auth{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.footer__partner{font-size:.8rem;color:#cfe0ea;margin-top:4px}
+.footer__copyright{
+  position:relative;z-index:2;text-align:center;font-size:.78rem;color:#b9cdda;
+  padding:16px;border-top:1px solid rgba(255,255,255,.12);
+}
+
+/* ---------- To top ---------- */
+.to-top{
+  position:fixed;right:20px;bottom:20px;z-index:70;
+  width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  background:var(--accent);color:#fff;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transform:translateY(12px);transition:all .3s ease;
+}
+.to-top.is-visible{opacity:1;pointer-events:auto;transform:none}
+.to-top:hover{transform:translateY(-3px)}
+
+/* ---------- Reveal animation ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.is-in{opacity:1;transform:none}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1024px){
+  .cards-grid,.cards-grid--4{grid-template-columns:repeat(2,1fr)}
+  .contact__grid{grid-template-columns:1fr 1fr}
+  .contact__col--van{grid-column:1/-1}
+  .footer__inner{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:768px){
+  .container{padding-inline:14px}
+  .topbar__inner{flex-direction:column;gap:8px;padding-block:10px}
+  .topbar__member{display:none}
+  .topbar .brand__logo{font-size:1.65rem}
+  .topbar__right{flex-wrap:wrap;justify-content:center;gap:8px}
+  .topbar__right .btn{font-size:.82rem;padding:0 .9rem;min-height:36px;height:36px}
+  .topbar__right .btn .icon,.topbar__right .btn .lucide{width:14px;height:14px}
+  .nav__inner{flex-direction:column;align-items:stretch;gap:0}
+  .nav__bar{flex:none;justify-content:space-between;min-height:var(--header-h)}
+  .nav .brand__tag{font-size:.92rem}
+  .nav__toggle{display:grid}
+  .nav__menu{
+    width:100%;margin:0;flex-direction:column;gap:0;
+    max-height:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;
+    transition:max-height .35s ease,opacity .25s ease,visibility .25s ease;
+    border-top:1px solid transparent;
+  }
+  .nav.is-open .nav__menu{
+    max-height:420px;opacity:1;visibility:visible;pointer-events:auto;
+    padding:6px 0 12px;border-top-color:rgba(255,255,255,.12);
+  }
+  .nav__menu a{
+    display:block;width:100%;padding:.85rem .25rem;border-radius:8px;
+    font-size:.95rem;border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .nav__menu a:last-child{border-bottom:none}
+  body.nav-open{overflow:hidden}
+  .section{padding:48px 0}
+  .about__intro{padding:40px 0}
+  .about > .container{padding-top:36px;padding-bottom:48px}
+  .about__lead{font-size:.92rem;line-height:1.65;padding:0 2px}
+  .heading{font-size:1.55rem;margin-bottom:.6rem}
+  .section__cta{margin-top:24px}
+  .cards-grid,.cards-grid--4{gap:14px}
+  .card__media{aspect-ratio:4/3}
+}
+@media (max-width:560px){
+  .cards-grid,.cards-grid--4{grid-template-columns:repeat(2,1fr);gap:12px}
+  .card__title{font-size:.82rem}
+  .card__meta,.card__route,.card__desc{font-size:.72rem}
+  .card__badge{font-size:.62rem;padding:.2rem .45rem}
+  .card__price-new{font-size:.88rem}
+  .card__price-old{font-size:.68rem}
+  .card__rating{font-size:.68rem}
+  .card__body{padding:10px 10px 12px}
+  .hotel-card .card__title{font-size:.8rem;min-height:2.4em}
+  .hotel-card .card__thumbs{display:none}
+  .hotel-card .amenities{display:none}
+  .hotel-card .card__desc{display:none}
+  .hotel-card .btn{font-size:.78rem;padding:0 .75rem}
+  .review-card{padding:14px 10px}
+  .review-card__text{font-size:.72rem;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .review-card__avatar{width:52px;height:52px}
+  .contact__grid,.footer__inner{grid-template-columns:1fr}
+  .hero__arrow{display:none}
+  .gallery-lightbox{
+    grid-template-columns:1fr;grid-template-rows:auto 1fr auto;
+    padding:56px 12px 20px;
+  }
+  .gallery-lightbox__prev,.gallery-lightbox__next{
+    position:absolute;bottom:20px;z-index:2;
+  }
+  .gallery-lightbox__prev{left:20px}
+  .gallery-lightbox__next{right:20px}
+  .mini-slider__arrow--prev{left:calc(-36px - 12px)}
+  .mini-slider__arrow--next{right:calc(-36px - 12px)}
+  .mini-slider__arrow{width:36px;height:36px}
+}
