@@ -12,7 +12,18 @@ function initLucide() {
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 
-const SITE_BASE = (document.querySelector('meta[name="site-base"]')?.content || '').replace(/\/$/, '');
+function resolveSiteBase() {
+  const raw = (document.querySelector('meta[name="site-base"]')?.content || '').trim();
+  if (raw && raw !== 'auto') {
+    return raw.replace(/\/$/, '');
+  }
+  const path = location.pathname || '/';
+  if (path.startsWith('/เกาะลิบง.com')) return '/เกาะลิบง.com';
+  if (path.startsWith('/KOHLIBONG')) return '/KOHLIBONG';
+  return '';
+}
+
+const SITE_BASE = resolveSiteBase();
 
 function siteUrl(path) {
   const clean = String(path || '').replace(/^\//, '');

@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="alert alert--ok">ติดตั้งสำเร็จแล้ว — ลบหรือปิดไฟล์ setup.php หลังใช้งาน</div>
       <p><a class="btn btn--blue" href="member/login.php">เข้าสู่ระบบ</a></p>
     <?php else: ?>
-      <p class="member-lead">รันครั้งเดียวเพื่อสร้างฐานข้อมูลและบัญชีแอดมิน (ต้องเปิด XAMPP MySQL)</p>
+      <p class="member-lead">รันครั้งเดียวเพื่อสร้างตารางฐานข้อมูลและบัญชีแอดมิน — ต้องตั้งค่า <code>includes/config.local.php</code> ให้เชื่อม DB บนโฮสติ้งก่อน</p>
       <form method="post" class="member-form">
         <label>อีเมลแอดมิน<input type="email" name="admin_email" required value="admin@kohlibong.com" /></label>
         <label>รหัสผ่านแอดมิน<input type="password" name="admin_password" required minlength="6" /></label>

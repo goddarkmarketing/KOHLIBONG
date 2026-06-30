@@ -89,9 +89,15 @@ if (is_file($setupPath)) {
     warn($report, 'setup.php still present — disable or remove before production');
 }
 
+$configLocal = $root . '/includes/config.local.php';
+is_file($configLocal)
+    ? pass($report, 'config.local.php present (production credentials)')
+    : warn($report, 'No config.local.php — copy config.local.php.example on hosting before deploy');
+
 $config = file_get_contents($root . '/includes/config.php');
-str_contains($config, "DB_PASS', ''") ? warn($report, 'DB_PASS is empty in config.php — set production credentials') : pass($report, 'DB_PASS not empty');
-str_contains($config, "SITE_BASE', '/เกาะลิบง.com'") ? warn($report, 'SITE_BASE is local path — update for production domain') : pass($report, 'SITE_BASE may be production-ready');
+str_contains($config, 'app_detect_site_base')
+    ? pass($report, 'SITE_BASE auto-detect enabled')
+    : warn($report, 'SITE_BASE may be hardcoded — check includes/config.php');
 
 // CSRF usage in admin POST handlers
 $adminPosts = file_get_contents($root . '/admin/content.php');

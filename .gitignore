@@ -3,6 +3,7 @@ backups/*.zip
 
 # Runtime / local flags
 data/.site-content-seed-ver
+includes/config.local.php
 
 # OS
 Thumbs.db

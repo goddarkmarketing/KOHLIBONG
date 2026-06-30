@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * คัดลอกไฟล์นี้เป็น config.local.php บนโฮสติ้ง (อย่า commit รหัสผ่านจริง)
+ * includes/config.local.php จะถูกโหลดทับค่า default ใน config.php
+ */
+
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'ชื่อฐานข้อมูลจากโฮสติ้ง');
+define('DB_USER', 'ชื่อผู้ใช้ฐานข้อมูล');
+define('DB_PASS', 'รหัสผ่านฐานข้อมูล');
+
+// โดเมนราก (public_html) ไม่ต้องกำหนด — ระบบจะ detect เป็น '' อัตโนมัติ
+// define('SITE_BASE', '');
