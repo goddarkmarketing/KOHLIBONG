@@ -1,0 +1,9 @@
+# Generated full backups (download via admin)
+backups/*.zip
+
+# Runtime / local flags
+data/.site-content-seed-ver
+
+# OS
+Thumbs.db
+.DS_Store

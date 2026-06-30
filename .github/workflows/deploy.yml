@@ -28,7 +28,10 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html .nojekyll _site/
-          cp -r css js better-together _site/
+          cp -r css js data _site/
+          if [ -d better-together ] && [ "$(ls -A better-together 2>/dev/null)" ]; then
+            cp -r better-together _site/
+          fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
