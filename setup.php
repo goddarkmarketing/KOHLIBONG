@@ -43,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             date('Y-m-d'), date('Y-m-d', strtotime('+10 years')),
         ]);
 
+        seed_demo_member();
+
         foreach ([SLIP_DIR, COVER_DIR] as $dir) {
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);
@@ -70,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($error): ?><div class="alert alert--error"><?= e($error) ?></div><?php endif; ?>
     <?php if ($done): ?>
       <div class="alert alert--ok">ติดตั้งสำเร็จแล้ว — ลบหรือปิดไฟล์ setup.php หลังใช้งาน</div>
+      <p>บัญชีทดสอบสมาชิก: <code>member@kohlibong.com</code> / <code>member123</code></p>
       <p><a class="btn btn--blue" href="member/login.php">เข้าสู่ระบบ</a></p>
     <?php else: ?>
       <p class="member-lead">รันครั้งเดียวเพื่อสร้างตารางฐานข้อมูลและบัญชีแอดมิน — ต้องตั้งค่า <code>includes/config.local.php</code> ให้เชื่อม DB บนโฮสติ้งก่อน</p>

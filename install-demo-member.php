@@ -15,23 +15,7 @@ $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $hash = password_hash($pass, PASSWORD_DEFAULT);
-        $db = db();
-        $check = $db->prepare('SELECT id FROM users WHERE email = ?');
-        $check->execute([$email]);
-        if ($check->fetch()) {
-            $upd = $db->prepare("UPDATE users SET password_hash=?, full_name=?, phone=?, member_type=?, role='member', status='active', subscription_start=?, subscription_end=? WHERE email=?");
-            $upd->execute([
-                $hash, 'สมาชิกทดสอบ', '0812345678', 'reviewer',
-                date('Y-m-d'), date('Y-m-d', strtotime('+30 days')), $email,
-            ]);
-        } else {
-            $ins = $db->prepare("INSERT INTO users (email, password_hash, full_name, phone, member_type, role, status, subscription_start, subscription_end) VALUES (?,?,?,?,?,?,?,?,?)");
-            $ins->execute([
-                $email, $hash, 'สมาชิกทดสอบ', '0812345678', 'reviewer', 'member', 'active',
-                date('Y-m-d'), date('Y-m-d', strtotime('+30 days')),
-            ]);
-        }
+        seed_demo_member($email, $pass);
         $done = true;
     } catch (Throwable $ex) {
         $error = $ex->getMessage();

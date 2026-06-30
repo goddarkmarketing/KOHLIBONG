@@ -437,3 +437,22 @@ function public_asset_url(?string $path): ?string
 
     return SITE_BASE . '/' . ltrim($path, '/');
 }
+
+/** สร้าง/รีเซ็ตบัญชีสมาชิกทดสอบ member@kohlibong.com */
+function seed_demo_member(string $email = 'member@kohlibong.com', string $pass = 'member123'): void
+{
+    $email = trim(strtolower($email));
+    $hash = password_hash($pass, PASSWORD_DEFAULT);
+    $db = db();
+    $check = $db->prepare('SELECT id FROM users WHERE email = ?');
+    $check->execute([$email]);
+    $start = date('Y-m-d');
+    $end = date('Y-m-d', strtotime('+30 days'));
+    if ($check->fetch()) {
+        $upd = $db->prepare("UPDATE users SET password_hash=?, full_name=?, phone=?, member_type=?, role='member', status='active', subscription_start=?, subscription_end=? WHERE email=?");
+        $upd->execute([$hash, 'สมาชิกทดสอบ', '0812345678', 'reviewer', $start, $end, $email]);
+        return;
+    }
+    $ins = $db->prepare("INSERT INTO users (email, password_hash, full_name, phone, member_type, role, status, subscription_start, subscription_end) VALUES (?,?,?,?,?,?,?,?,?)");
+    $ins->execute([$email, $hash, 'สมาชิกทดสอบ', '0812345678', 'reviewer', 'member', 'active', $start, $end]);
+}
