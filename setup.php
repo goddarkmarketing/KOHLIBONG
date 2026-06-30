@@ -18,9 +18,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $sql = file_get_contents(__DIR__ . '/sql/schema.sql');
-        $pdo = new PDO('mysql:host=' . DB_HOST . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        ]);
+        // Shared hosting (Plesk/cPanel): DB already exists — skip CREATE DATABASE / USE.
+        $sql = preg_replace('/^\s*CREATE\s+DATABASE\b.*?;\s*/ims', '', $sql);
+        $sql = preg_replace('/^\s*USE\s+\w+\s*;\s*/im', '', $sql);
+
+        $pdo = new PDO(
+            'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET,
+            DB_USER,
+            DB_PASS,
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+        );
         foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
             if ($stmt !== '') {
                 $pdo->exec($stmt);
