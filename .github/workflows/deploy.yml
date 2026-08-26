@@ -27,7 +27,7 @@ jobs:
       - name: Prepare static site
         run: |
           mkdir -p _site
-          cp index.html .nojekyll _site/
+          cp index.html article.html .nojekyll _site/
           cp -r css js data _site/
           if [ -d better-together ] && [ "$(ls -A better-together 2>/dev/null)" ]; then
             cp -r better-together _site/

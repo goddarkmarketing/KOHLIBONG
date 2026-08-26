@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
+header('Cache-Control: public, max-age=60');
 
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/site_content_helpers.php';
 
 try {
-    site_content_ensure_table();
     $payload = ['ok' => true];
     foreach (site_content_export_section_keys() as $section) {
         $rows = site_content_list($section, true);
