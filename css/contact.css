@@ -1,0 +1,140 @@
+/* Contact page — matches KOH LIBONG site language */
+
+.contact-page {
+  background:
+    radial-gradient(1200px 420px at 10% -10%, rgba(15, 127, 181, .08), transparent 60%),
+    radial-gradient(900px 360px at 100% 8%, rgba(10, 77, 110, .06), transparent 55%),
+    var(--bg);
+}
+
+.cp-shell {
+  padding-top: 8px;
+  padding-bottom: 64px;
+}
+
+.cp-section {
+  margin-top: 36px;
+  padding-top: 8px;
+}
+
+.cp-section__head {
+  margin-bottom: 18px;
+  max-width: 36rem;
+}
+
+.cp-section__title {
+  margin: 0 0 6px;
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+  color: var(--ocean-deep);
+}
+
+.cp-section__desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.5;
+}
+
+.cp-channels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.cp-channel {
+  padding: 22px 22px 20px;
+  border-top: 3px solid var(--ocean);
+  background: linear-gradient(180deg, #fff 0%, var(--bg-soft) 100%);
+}
+
+.cp-channel__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 1.12rem;
+  color: var(--ocean-deep);
+}
+
+.cp-channel__title .icon,
+.cp-channel__title .lucide {
+  width: 22px;
+  height: 22px;
+  color: var(--ocean);
+}
+
+.cp-channel__list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cp-channel__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cp-channel__name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cp-channel__tel {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ocean-deep);
+  text-decoration: none;
+}
+
+.cp-channel__tel:hover { color: var(--ocean); }
+
+.cp-channel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cp-office {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.cp-office__map iframe {
+  height: 360px;
+}
+
+@media (max-width: 900px) {
+  .cp-channels,
+  .cp-office {
+    grid-template-columns: 1fr;
+  }
+
+  .cp-office__map iframe {
+    height: 280px;
+  }
+}
+
+@media (max-width: 560px) {
+  .cp-channel__actions {
+    width: 100%;
+  }
+
+  .cp-channel__actions .btn {
+    flex: 1 1 auto;
+  }
+}

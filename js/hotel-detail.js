@@ -679,7 +679,7 @@
       <span class="hd-room__amenity">${lucide(amenityIcon(a))} ${esc(a)}</span>`
       )
       .join('');
-    const href = contact || '#contact';
+    const href = contact || 'contact.html';
     return `<article class="hd-room">
       <div class="hd-room__media">
         <img src="${esc(img)}" alt="${esc(room.name)}" loading="lazy" decoding="async">
@@ -872,7 +872,7 @@
 
   function buildHotelDetailHtml(item, opts = {}) {
     const detail = getDetail(item);
-    const contact = opts.contactUrl || '#contact';
+    const contact = opts.contactUrl || 'contact.html';
     const related = opts.relatedHotels || [];
     const railHtml = opts.railHtml || '';
     const articleUrlFn = opts.articleUrl;

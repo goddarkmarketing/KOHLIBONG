@@ -607,7 +607,7 @@ function preloadImage(url) {
   }
 
   function contactUrl() {
-    return document.body.dataset.page === 'article' ? siteUrl('index.html#contact') : '#contact';
+    return siteUrl('contact.html');
   }
 
   function getContentItem(section, id, title = '') {
