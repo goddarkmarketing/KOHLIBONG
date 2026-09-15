@@ -176,13 +176,20 @@ async function initSiteAuth() {
   }
 }
 
-/* รูปภาพจาก https://xn--72c1af2cbv3ee4v.com/ (Talay Trang) + Pexels */
+/* รูปภาพจาก https://xn--72c1af2cbv3ee4v.com/ (Talay Trang) + Pexels + Booking (ที่พักเกาะลิบงจริง) */
 const TT = 'https://xn--72c1af2cbv3ee4v.com';
 const W = { card: 640, thumb: 180, hero: 1400, gallery: 600, mini: 420, avatar: 120, van: 640, footer: 1200 };
 const px = (id, w = W.card) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${w}`;
 const upload = (file) => `${TT}/assets/uploads/${file}`;
-const thumb = (url) => (url.includes('pexels.com') ? url.replace(/w=\d+/, `w=${W.thumb}`) : url);
+/** รูปจริงจาก Booking.com CDN */
+const bk = (id, k, size = 'max1024x768') =>
+  `https://cf.bstatic.com/xdata/images/hotel/${size}/${id}.jpg?k=${k}&o=`;
+const thumb = (url) => {
+  if (url.includes('pexels.com')) return url.replace(/w=\d+/, `w=${W.thumb}`);
+  if (url.includes('bstatic.com')) return url.replace(/\/max\d+x\d+\//, '/max300/');
+  return url;
+};
 
 const cImg = (id) => px(id, W.card);
 const gImg = (id) => px(id, W.gallery);
@@ -248,20 +255,60 @@ const IMG = {
     px(14573822, W.card),
   ],
   hotelGalleries: [
-    [px(261102, W.gallery), px(29974430, W.gallery), px(1450363, W.gallery), px(13419316, W.gallery), px(31029704, W.gallery), px(271624, W.gallery), px(5740342, W.gallery), px(18297054, W.gallery)],
-    [px(271624, W.gallery), px(1457842, W.gallery), px(2037926, W.gallery), px(1267320, W.gallery), px(31029704, W.gallery), px(1591376, W.gallery), px(6698714, W.gallery), px(457881, W.gallery)],
-    [px(1450363, W.gallery), px(2486168, W.gallery), px(1032650, W.gallery), px(271624, W.gallery), px(13419316, W.gallery), px(29974430, W.gallery), px(18297054, W.gallery), px(28581876, W.gallery)],
-    [px(5740342, W.gallery), px(338504, W.gallery), px(261181, W.gallery), px(261102, W.gallery), px(31029704, W.gallery), px(1287146, W.gallery), px(14573822, W.gallery), px(457881, W.gallery)],
+    /* ลิบง บีช รีสอร์ท — Libong Beach Resort */
+    [
+      bk(687099515, '687e7c05a5acf389b2c3d9346ae952488c4acf670bab05dfd74f079cdb815dc4'),
+      bk(687093925, 'b05b56608b26f26bd2c06b62ac8012edfecc3e669e247cb0bd292013aeb621f5'),
+      bk(172989173, '705e1292e78a91f075c9cedbf45d78d8127ccff352a1c5aa64f04bbd998edd34'),
+      bk(406488113, 'b0fdaf8a8cf3b5694b7e3eae7e83f3a0302f1f88db9ea3d0bc4858800bfad850'),
+      bk(687097759, 'f0482a38ee6653d2cea9ba05dbf950b9d1230d5f475b1b48df27588464c22139'),
+      bk(687097881, 'cac714d88cb2e6c79ff03cdd95660413e82f72ccf878baff6e87a257b72d2cc2'),
+      bk(687097758, 'c4e254b5b506002a9a5c1ee994ccd7950b862d41bea46fa1d6002b99b90ad64c'),
+      bk(406488007, 'd44cba77fe5461afac2c6ea40b4dcee6f35600bf854042ad4c109dd3335cf423'),
+    ],
+    /* หลังเขา โฮมสเตย์ — Langkao / โฮมสเตย์เกาะลิบงจริง */
+    [
+      bk(803846458, '3fc8cdf6b10438d5035b691fe91f0ed3031d28b440f7c7c8ab06ff2e38812491'),
+      bk(340339942, 'a787628d959e24189f4f6a89a339279f736b227151ae6685526610fc1301f778'),
+      bk(340345494, '0347545629b386c98d00ca938e68f30b2d299f5d013b1addcbd15381f039fd20'),
+      bk(605198512, '872767ffd0efbbc048cba4a8bc744a4164aea080979afad48e224bfd12bc9de6'),
+      bk(605198631, '23f7a411b77512c5edcbfd2cf15e1d3d51878ecbb74d2ba8ca8a5747b13563ab'),
+      bk(605201302, 'f6930af39dfb689c0795309f61bc278c38a87eb4cfd1dd37a852b35bbc0ce189'),
+      bk(663547724, '06825dc608e00d80302848f2db86bc5826b9a880100ab946b240c63a0a4f0834'),
+      bk(442216842, '6c53a223d175ef70d9bb435f2b7280fd7e028273bbae08b804db265542cbf49c'),
+    ],
+    /* ดูหยง ซีวิว บังกะโล — Le Dugong Libong Resort */
+    [
+      bk(590917483, '54c3973ea56819e8d9aaf3c75139ed0dc85c8230f1e66925d3c46c60e342adf2'),
+      bk(590691497, 'fdbad430de69f119962d786d52514a51b9f647a5293294d7a167155a56ab405d'),
+      bk(590694961, 'b8bed2c764c20b83128ffca7065f9a32c1c7ef2544e9e859b36f4d72aa66bb5a'),
+      bk(590692579, '275a2128449e6f798134895bae0d3cb4cb955217e6dee7cf41a48c0b1f97d104'),
+      bk(590690962, '8e1deba38251723c12348ffa8487fe64104ac07634a7d750508340dd6ec79311'),
+      bk(590693501, '4f9195bbc8ccdda0b4186b0f075578dbb3e91683c617c065c9ddeed66585a544'),
+      bk(590694293, '8dbd35fe9f32f2479833945b77c81ee020d388a1cfd1cfdbf17f0f6c9c816ccf'),
+      bk(271241141, '7d35cab9fb2ec3079879a8e3f3bc5abfa82f4f02fe789d38cedfff6d2fb3a985'),
+    ],
+    /* เลตรัง รีสอร์ท แอนด์ สปา — Andalay Beach Resort Koh Libong */
+    [
+      bk(148166215, '9687dacf591103065da73e65b45ad2ec49cb86d7495b7e06bb565281643f9638'),
+      bk(88450611, '7631eea4dccbd1e15b0906763557af616dc16bb418dc13efd7e877ef4db713fd'),
+      bk(224179908, '2be9177a28d6650e1fd15ffb18cdc6b383ec9c7965735c1cb44c9ffdd6ba2c68'),
+      bk(183281163, '8ff669340e16b196741aa1cdf1c3aeeec9f08506b2d8a23a265fbd2f57924c63'),
+      bk(504446337, '2dee360f49ba68da5ccac4f38bfd0c8baf32718768516fa34d7ec0b8f0e8d6d5'),
+      bk(504447541, '62699814ed8c71e6ff6ca8dcb2cf90d655fdb84b7184b7cd42e89b84f2625a28'),
+      bk(610031610, '7c4416bdf73a25bd7ca77943ef93b71741ec0da3b067a2869ea4b1094b38f6aa'),
+      bk(147831008, 'b92f2e81561efedfaeca6f4da991960f0a1367923f7c98fd46a93348c72023b5'),
+    ],
   ],
   miniSlides: [
-    px(271624, W.mini),
-    px(261102, W.mini),
-    px(1032650, W.mini),
-    px(2037926, W.mini),
-    px(29974430, W.mini),
-    px(1591376, W.mini),
-    px(5740342, W.mini),
-    px(1450363, W.mini),
+    bk(687099515, '687e7c05a5acf389b2c3d9346ae952488c4acf670bab05dfd74f079cdb815dc4'),
+    bk(803846458, '3fc8cdf6b10438d5035b691fe91f0ed3031d28b440f7c7c8ab06ff2e38812491'),
+    bk(590917483, '54c3973ea56819e8d9aaf3c75139ed0dc85c8230f1e66925d3c46c60e342adf2'),
+    bk(148166215, '9687dacf591103065da73e65b45ad2ec49cb86d7495b7e06bb565281643f9638'),
+    bk(183281163, '8ff669340e16b196741aa1cdf1c3aeeec9f08506b2d8a23a265fbd2f57924c63'),
+    bk(340339942, 'a787628d959e24189f4f6a89a339279f736b227151ae6685526610fc1301f778'),
+    bk(687093925, 'b05b56608b26f26bd2c06b62ac8012edfecc3e669e247cb0bd292013aeb621f5'),
+    bk(590691497, 'fdbad430de69f119962d786d52514a51b9f647a5293294d7a167155a56ab405d'),
   ],
   reviews: [
     px(6698714, W.avatar),
@@ -1701,6 +1748,24 @@ function preloadImage(url) {
       if (section === 'tour' && window.KL_TOUR_PKG) {
         root.innerHTML = window.KL_TOUR_PKG.buildTourPackageHtml(item);
         window.KL_TOUR_PKG.initTourPackagePage(item);
+      } else if (section === 'hotel' && window.KL_HOTEL_DETAIL) {
+        const crumb = `<nav class="article-page__crumb">
+          <a href="${siteUrl('index.html')}">หน้าแรก</a>
+          <span>/</span>
+          <a href="${siteUrl('index.html#hotels')}">จองโรงแรม</a>
+          <span>/</span>
+          <span>${escHtml(item.title)}</span>
+        </nav>`;
+        const relatedHotels = (contentRegistry.hotel || [])
+          .filter((h) => h._key !== item._key)
+          .slice(0, 3);
+        root.innerHTML = crumb + window.KL_HOTEL_DETAIL.buildHotelDetailHtml(item, {
+          relatedHotels,
+          railHtml: buildContentRailHtml(section, item._key),
+          contactUrl: contactUrl(),
+          articleUrl,
+        });
+        window.KL_HOTEL_DETAIL.initHotelDetailPage();
       } else {
         const crumb = `<nav class="article-page__crumb">
           <a href="${siteUrl('index.html')}">หน้าแรก</a>
