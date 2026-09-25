@@ -37,11 +37,17 @@ $daysLeft = days_until_subscription_end($user['subscription_end'] ?? null);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     try {
-        $amount = (float) ($_POST['amount'] ?? MEMBERSHIP_FEE);
+        $amount = normalize_membership_amount($_POST['amount'] ?? MEMBERSHIP_FEE);
         $transferDate = parse_date_picker('transfer', required: false);
         $slipPath = save_upload('slip', SLIP_DIR, 'renew');
         $stmt = db()->prepare('INSERT INTO payments (user_id, slip_path, amount, transfer_date, status) VALUES (?,?,?,?,?)');
         $stmt->execute([$user['id'], $slipPath, $amount, $transferDate ?: null, 'pending']);
+
+        if (in_array($user['status'], ['rejected', 'expired'], true)) {
+            db()->prepare("UPDATE users SET status = 'pending_approval' WHERE id = ? AND role = 'member'")
+                ->execute([$user['id']]);
+        }
+
         flash('ok', 'ส่งสลิปแล้ว — รอแอดมินอนุมัติ');
         redirect('renew.php');
     } catch (Throwable $ex) {
@@ -53,7 +59,15 @@ member_header('ต่ออายุสมาชิก', 'renew', 'ชำระ�
 ?>
 <?php if ($error): ?><div class="mapp-alert mapp-alert--error"><?= e($error) ?></div><?php endif; ?>
 
-<?php if ($daysLeft !== null && $daysLeft >= 0 && $daysLeft <= EXPIRY_WARN_DAYS): ?>
+<?php if ($user['status'] === 'rejected'): ?>
+  <div class="mapp-banner mapp-banner--error">
+    <i data-lucide="alert-circle" class="mapp-banner__icon"></i>
+    <div>
+      <strong>บัญชีถูกปฏิเสธ</strong>
+      <p>อัปโหลดสลิปใหม่ด้านล่างเพื่อขอเปิดใช้งานอีกครั้ง หรือติดต่อแอดมินที่หน้าช่วยเหลือ</p>
+    </div>
+  </div>
+<?php elseif ($daysLeft !== null && $daysLeft >= 0 && $daysLeft <= EXPIRY_WARN_DAYS): ?>
   <div class="mapp-banner mapp-banner--info">
     <i data-lucide="alarm-clock" class="mapp-banner__icon"></i>
     <div>
@@ -103,7 +117,8 @@ member_header('ต่ออายุสมาชิก', 'renew', 'ชำระ�
       <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
       <label class="field">
         <span class="field__label">จำนวนเงิน (บาท)</span>
-        <input type="number" name="amount" step="0.01" value="<?= MEMBERSHIP_FEE ?>" required />
+        <input type="number" name="amount" step="0.01" value="<?= MEMBERSHIP_FEE ?>" readonly required />
+        <span class="field__hint">ยอดคงที่ตามค่าสมาชิก — ไม่สามารถแก้ได้</span>
       </label>
       <div class="field">
         <span class="field__label">วันที่โอน</span>
@@ -157,7 +172,7 @@ member_header('ต่ออายุสมาชิก', 'renew', 'ชำระ�
               <td class="at-col at-col--main">
                 <div class="mapp-table__cell">
                 <?php if ($p['admin_note']): ?><span class="mapp-table__sub"><?= e($p['admin_note']) ?></span><?php endif; ?>
-                <a class="mapp-table__link" href="../<?= e($p['slip_path']) ?>" target="_blank" rel="noopener">สลิป</a>
+                <a class="mapp-table__link" href="<?= e(payment_slip_url((int) $p['id'])) ?>" target="_blank" rel="noopener">สลิป</a>
                 </div>
               </td>
             </tr>

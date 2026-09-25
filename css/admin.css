@@ -81,6 +81,33 @@
   flex: 1;
   padding: 16px 12px;
   overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.admin-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-nav::-webkit-scrollbar-track {
+  margin: 8px 0;
+  background: transparent;
+}
+
+.admin-nav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.35);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.admin-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.55);
+}
+
+.admin-nav::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 .admin-nav__group {
@@ -434,6 +461,133 @@
   font-size: 0.9rem;
   color: var(--admin-muted);
   line-height: 1.55;
+}
+
+.admin-panel__subtitle {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--admin-ink);
+}
+
+.admin-divider {
+  border: 0;
+  border-top: 1px solid var(--admin-border);
+  margin: 28px 0 24px;
+}
+
+.admin-text-ok {
+  color: #15803d;
+}
+
+.admin-text-warn {
+  color: #b45309;
+}
+
+/* ---- Settings / edit forms ---- */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--admin-ink);
+}
+
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 400;
+  color: var(--admin-ink);
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-field input:focus,
+.admin-field textarea:focus,
+.admin-field select:focus {
+  outline: none;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+.admin-field textarea {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.5;
+}
+
+.admin-field__hint {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+}
+
+.admin-field__hint a {
+  color: #0369a1;
+}
+
+.admin-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admin-search .input-sm {
+  min-width: 200px;
+  max-width: 280px;
+  height: var(--btn-h, 36px);
+  padding: 0 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  font: inherit;
+}
+
+.admin-row-actions--wrap {
+  flex-wrap: wrap;
+}
+
+.input-sm--pass {
+  width: 110px !important;
+  min-width: 110px !important;
+  max-width: 140px !important;
+}
+
+@media (max-width: 720px) {
+  .admin-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-panel__head--row {
+    flex-direction: column;
+  }
+
+  .admin-search {
+    width: 100%;
+  }
+
+  .admin-search .input-sm {
+    flex: 1;
+    max-width: none;
+  }
 }
 
 /* ---- Stat cards ---- */

@@ -11,6 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     $post = member_get_post($id, (int) $user['id']);
     if ($post) {
         db()->prepare('DELETE FROM posts WHERE id = ? AND user_id = ?')->execute([$id, $user['id']]);
+        if (!empty($post['cover_image'])) {
+            $path = BASE_PATH . '/' . ltrim((string) $post['cover_image'], '/');
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
+        export_public_content_json();
         flash('ok', 'ลบรายการแล้ว');
     }
     redirect('posts.php');

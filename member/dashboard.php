@@ -4,22 +4,35 @@ declare(strict_types=1);
 require_once __DIR__ . '/_layout.php';
 
 $user = require_member();
-$postsStmt = db()->prepare('SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC LIMIT 10');
+
+$postsStmt = db()->prepare('SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC LIMIT 20');
 $postsStmt->execute([$user['id']]);
 $myPosts = $postsStmt->fetchAll();
 
-$paymentsStmt = db()->prepare('SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC LIMIT 5');
+$paymentsStmt = db()->prepare('SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC LIMIT 8');
 $paymentsStmt->execute([$user['id']]);
 $myPayments = $paymentsStmt->fetchAll();
 
 $biz = $user['member_type'] === 'business' ? member_get_business_profile((int) $user['id']) : null;
 
-$pendingPosts = count(array_filter($myPosts, static fn ($p) => $p['status'] === 'pending'));
-$approvedPosts = count(array_filter($myPosts, static fn ($p) => $p['status'] === 'approved'));
-$rejectedPosts = count(array_filter($myPosts, static fn ($p) => $p['status'] === 'rejected'));
+$countStmt = db()->prepare("
+    SELECT status, COUNT(*) AS c
+    FROM posts
+    WHERE user_id = ?
+    GROUP BY status
+");
+$countStmt->execute([$user['id']]);
+$statusCounts = $countStmt->fetchAll(PDO::FETCH_KEY_PAIR);
+$pendingPosts = (int) ($statusCounts['pending'] ?? 0);
+$approvedPosts = (int) ($statusCounts['approved'] ?? 0);
+$rejectedPosts = (int) ($statusCounts['rejected'] ?? 0);
+
+$notifications = member_build_notifications($user, $myPosts, $myPayments);
 
 member_header('แดชบอร์ด', 'dashboard', 'สวัสดี, ' . $user['full_name']);
 ?>
+
+<?= render_member_notifications($notifications) ?>
 
 <div class="mapp-stats">
   <article class="mapp-stat">
@@ -33,7 +46,7 @@ member_header('แดชบอร์ด', 'dashboard', 'สวัสดี, ' . 
     <span class="mapp-stat__icon mapp-stat__icon--teal"><i data-lucide="calendar"></i></span>
     <div>
       <span class="mapp-stat__label">ใช้ได้ถึง</span>
-      <span class="mapp-stat__value"><?= $user['subscription_end'] ? e($user['subscription_end']) : '—' ?></span>
+      <span class="mapp-stat__value"><?= $user['subscription_end'] ? e(format_date_th($user['subscription_end'])) : '—' ?></span>
     </div>
   </article>
   <article class="mapp-stat">
@@ -45,7 +58,25 @@ member_header('แดชบอร์ด', 'dashboard', 'สวัสดี, ' . 
   </article>
 </div>
 
-<?php if ($user['status'] === 'active' && subscription_valid($user)): ?>
+<?php if ($user['status'] === 'rejected'): ?>
+  <div class="mapp-banner mapp-banner--error">
+    <i data-lucide="alert-circle" class="mapp-banner__icon"></i>
+    <div>
+      <strong>บัญชีถูกปฏิเสธ</strong>
+      <p>ส่งสลิปใหม่เพื่อขอเปิดใช้งานอีกครั้ง หรือติดต่อแอดมิน</p>
+    </div>
+    <a href="renew.php" class="btn btn--login btn--sm">ส่งสลิปใหม่</a>
+  </div>
+<?php elseif ($user['status'] === 'pending_approval'): ?>
+  <div class="mapp-banner mapp-banner--info">
+    <i data-lucide="clock" class="mapp-banner__icon"></i>
+    <div>
+      <strong>รอแอดมินตรวจสอบสลิป</strong>
+      <p>โดยปกติภายใน 24 ชั่วโมง — สามารถดูสถานะสลิปได้ที่หน้าต่ออายุ</p>
+    </div>
+    <a href="renew.php" class="btn btn--ghost-dark btn--sm">ดูสลิป</a>
+  </div>
+<?php elseif ($user['status'] === 'active' && subscription_valid($user)): ?>
   <div class="mapp-actions">
     <?php if ($user['member_type'] === 'reviewer'): ?>
       <a href="review-new.php" class="btn btn--primary"><i data-lucide="star" class="icon"></i> เขียนรีวิวใหม่</a>
@@ -54,6 +85,15 @@ member_header('แดชบอร์ด', 'dashboard', 'สวัสดี, ' . 
     <?php endif; ?>
     <a href="posts.php" class="btn btn--blue"><i data-lucide="folder-open" class="icon"></i> โพสต์ของฉัน</a>
     <a href="renew.php" class="btn btn--ghost-dark"><i data-lucide="credit-card" class="icon"></i> ต่ออายุ</a>
+  </div>
+<?php else: ?>
+  <div class="mapp-banner mapp-banner--error">
+    <i data-lucide="alert-circle" class="mapp-banner__icon"></i>
+    <div>
+      <strong>สมาชิกหมดอายุหรือยังไม่เปิดใช้งาน</strong>
+      <p>อัปโหลดสลิปเพื่อขอเปิดใช้งานต่อ</p>
+    </div>
+    <a href="renew.php" class="btn btn--login btn--sm">ต่ออายุสมาชิก</a>
   </div>
 <?php endif; ?>
 
@@ -83,12 +123,12 @@ member_header('แดชบอร์ด', 'dashboard', 'สวัสดี, ' . 
           <?php if (!$myPayments): ?>
             <tr><td colspan="4" class="mapp-table__empty">ยังไม่มีข้อมูล</td></tr>
           <?php endif; ?>
-          <?php foreach ($myPayments as $p): ?>
+          <?php foreach (array_slice($myPayments, 0, 5) as $p): ?>
             <tr>
-              <td class="at-col at-col--short"><?= e(substr($p['created_at'], 0, 10)) ?></td>
+              <td class="at-col at-col--short"><?= e(format_date_th(substr($p['created_at'], 0, 10))) ?></td>
               <td class="at-col at-col--short"><?= number_format((float) $p['amount'], 0) ?> บาท</td>
               <td class="at-col at-col--short"><?= status_badge($p['status']) ?></td>
-              <td class="at-col at-col--short"><a class="mapp-table__link" href="../<?= e($p['slip_path']) ?>" target="_blank" rel="noopener">ดูสลิป</a></td>
+              <td class="at-col at-col--short"><a class="mapp-table__link" href="<?= e(payment_slip_url((int) $p['id'])) ?>" target="_blank" rel="noopener">ดูสลิป</a></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

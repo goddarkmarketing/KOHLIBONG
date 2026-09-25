@@ -13,6 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'hide') {
             hide_post($id, (int) $admin['id'], $note);
             flash('ok', 'ถอนการเผยแพร่แล้ว');
+        } elseif ($action === 'unhide') {
+            unhide_post($id, (int) $admin['id'], $note);
+            flash('ok', 'เผยแพร่ซ้ำแล้ว');
+        } elseif ($action === 'delete') {
+            delete_post($id);
+            flash('ok', 'ลบโพสต์แล้ว');
         } else {
             approve_post($id, (int) $admin['id'], $action === 'approve', $note);
             flash('ok', $action === 'approve' ? 'อนุมัติโพสต์แล้ว' : 'ปฏิเสธโพสต์แล้ว');
@@ -115,6 +121,7 @@ admin_header('โพสต์ / รีวิว', 'posts', 'ตรวจสอ�
               <div class="admin-table__cell admin-table__cell--actions">
               <div class="admin-row-actions">
                 <a href="post-view.php?id=<?= (int) $r['id'] ?>" class="btn btn--sm btn--ghost-dark">ดู</a>
+                <a href="post-edit.php?id=<?= (int) $r['id'] ?>" class="btn btn--sm btn--ghost-dark">แก้</a>
                 <?php if ($r['status'] === 'pending'): ?>
                   <form method="post" class="admin-row-actions">
                     <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
@@ -130,9 +137,22 @@ admin_header('โพสต์ / รีวิว', 'posts', 'ตรวจสอ�
                     <input type="hidden" name="type_filter" value="<?= e($typeFilter) ?>" />
                     <button name="action" value="hide" class="btn btn--sm btn--login">ซ่อน</button>
                   </form>
+                <?php elseif ($r['status'] === 'hidden'): ?>
+                  <form method="post" class="admin-row-actions">
+                    <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
+                    <input type="hidden" name="id" value="<?= (int) $r['id'] ?>" />
+                    <input type="hidden" name="type_filter" value="<?= e($typeFilter) ?>" />
+                    <button name="action" value="unhide" class="btn btn--sm btn--green">เผยแพร่ซ้ำ</button>
+                  </form>
                 <?php else: ?>
                   <span class="admin-table__sub"><?= e($r['admin_note'] ?? '—') ?></span>
                 <?php endif; ?>
+                <form method="post" class="admin-row-actions" onsubmit="return confirm('ลบโพสต์ถาวร?');">
+                  <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
+                  <input type="hidden" name="id" value="<?= (int) $r['id'] ?>" />
+                  <input type="hidden" name="type_filter" value="<?= e($typeFilter) ?>" />
+                  <button name="action" value="delete" class="btn btn--sm btn--login">ลบ</button>
+                </form>
               </div>
               </div>
             </td>

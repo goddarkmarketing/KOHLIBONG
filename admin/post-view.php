@@ -25,6 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($action === 'hide') {
             hide_post($id, (int) $admin['id'], $note);
             flash('ok', 'ถอนการเผยแพร่แล้ว');
+        } elseif ($action === 'unhide') {
+            unhide_post($id, (int) $admin['id'], $note);
+            flash('ok', 'เผยแพร่ซ้ำแล้ว');
+        } elseif ($action === 'delete') {
+            delete_post($id);
+            flash('ok', 'ลบโพสต์แล้ว');
+            redirect('posts.php');
         } else {
             throw new RuntimeException('คำสั่งไม่ถูกต้อง');
         }
@@ -88,6 +95,10 @@ admin_header('ตรวจโพสต์', 'posts', e($post['title']));
     <?php if ($post['reviewed_at']): ?><span>ตรวจเมื่อ: <?= e(substr($post['reviewed_at'], 0, 16)) ?></span><?php endif; ?>
   </div>
 
+  <div class="admin-action-bar">
+    <a href="post-edit.php?id=<?= $id ?>" class="btn btn--ghost-dark">แก้ไขเนื้อหา</a>
+  </div>
+
   <?php if ($post['status'] === 'pending'): ?>
     <form method="post" class="admin-action-bar">
       <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
@@ -102,6 +113,17 @@ admin_header('ตรวจโพสต์', 'posts', e($post['title']));
       <button name="action" value="hide" class="btn btn--login">ถอนการเผยแพร่</button>
       <a href="<?= e(post_public_url($post)) ?>" class="btn btn--blue" target="_blank" rel="noopener">ดูบนเว็บ</a>
     </form>
+  <?php elseif ($post['status'] === 'hidden'): ?>
+    <form method="post" class="admin-action-bar">
+      <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
+      <input type="text" name="note" placeholder="หมายเหตุ (ถ้ามี)" class="input-sm" />
+      <button name="action" value="unhide" class="btn btn--green">เผยแพร่ซ้ำ</button>
+    </form>
   <?php endif; ?>
+
+  <form method="post" class="admin-action-bar" onsubmit="return confirm('ลบโพสต์ถาวร?');">
+    <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
+    <button name="action" value="delete" class="btn btn--login">ลบถาวร</button>
+  </form>
 </section>
 <?php admin_footer(); ?>

@@ -303,6 +303,22 @@ function format_date_th(?string $ymd): string
     return (int) date('j', $ts) . ' ' . $month . ' ' . ((int) date('Y', $ts) + 543);
 }
 
+/** บังคับยอดชำระให้ตรงค่าสมาชิกที่ตั้งไว้ */
+function normalize_membership_amount(mixed $raw): float
+{
+    $expected = (float) MEMBERSHIP_FEE;
+    $amount = round((float) $raw, 2);
+    if (abs($amount - $expected) > 0.01) {
+        throw new RuntimeException('จำนวนเงินต้องเป็น ' . number_format($expected) . ' บาท ตามที่กำหนด');
+    }
+    return $expected;
+}
+
+function payment_slip_url(int $paymentId): string
+{
+    return MEMBER_BASE . '/slip.php?id=' . $paymentId;
+}
+
 /** @return list<array<string, mixed>> */
 function get_approved_reviews(int $limit = 20): array
 {
@@ -370,9 +386,12 @@ function get_approved_listings(string $type, int $limit = 20): array
     }
 
     $stmt = db()->prepare("
-        SELECT p.id, p.title, p.content, p.price, p.location, p.cover_image, p.created_at, u.full_name
+        SELECT p.id, p.title, p.content, p.price, p.location, p.cover_image, p.created_at,
+               u.full_name, u.phone,
+               bp.line_id, bp.address AS biz_address
         FROM posts p
         JOIN users u ON u.id = p.user_id
+        LEFT JOIN business_profiles bp ON bp.user_id = u.id
         WHERE p.post_type = ? AND p.status = 'approved'
         ORDER BY p.created_at DESC
         LIMIT ?
@@ -397,10 +416,13 @@ function map_listing_api_row(array $row): array
         'title' => $row['title'],
         'text' => $row['content'],
         'price' => $row['price'],
-        'location' => $row['location'],
+        'location' => $row['location'] ?: ($row['biz_address'] ?? null),
         'cover' => $cover,
         'author' => $row['full_name'],
+        'phone' => $row['phone'] ?? null,
+        'line_id' => $row['line_id'] ?? null,
         'date' => substr((string) $row['created_at'], 0, 10),
+        'source' => 'member',
     ];
 }
 

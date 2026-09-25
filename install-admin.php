@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/db.php';
+require_setup_allowed('install-admin.php');
 
 $email = $argv[1] ?? 'admin@kohlibong.com';
 $pass = $argv[2] ?? 'admin123';

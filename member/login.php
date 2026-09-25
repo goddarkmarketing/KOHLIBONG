@@ -35,6 +35,7 @@ member_header('เข้าสู่ระบบ');
     <button type="submit" class="btn btn--login btn--block">เข้าสู่ระบบ</button>
   </form>
 
+  <?php if (app_show_demo_accounts()): ?>
   <div class="demo-accounts" aria-label="บัญชีทดสอบสำหรับตรวจงาน">
     <p class="demo-accounts__title">บัญชีทดสอบ (สำหรับตรวจงาน)</p>
 
@@ -72,8 +73,9 @@ member_header('เข้าสู่ระบบ');
       </button>
     </div>
   </div>
+  <?php endif; ?>
 
-  <p class="member-foot">ยังไม่มีบัญชี? <a href="register.php">สมัครสมาชิก</a> · <a href="renew.php">ต่ออายุสมาชิก</a></p>
+  <p class="member-foot">ยังไม่มีบัญชี? <a href="register.php">สมัครสมาชิก</a> · หมดอายุแล้ว? <a href="login.php">เข้าสู่ระบบ</a> แล้วไปหน้าต่ออายุ</p>
 </section>
 <script>
 document.addEventListener('DOMContentLoaded', () => {

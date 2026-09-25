@@ -67,11 +67,26 @@ define('SLIP_DIR', UPLOAD_DIR . '/slips');
 define('COVER_DIR', UPLOAD_DIR . '/covers');
 define('SITE_CONTENT_DIR', UPLOAD_DIR . '/site');
 
-define('MEMBERSHIP_FEE', 299);
-define('SUBSCRIPTION_DAYS', 30);
-define('BANK_INFO', 'ธนาคารกสิกรไทย · ชื่อบัญชี เกาะลิบง.com · เลขที่ 123-4-56789-0');
-define('ADMIN_CONTACT_LINE', '@kohlibong');
-define('ADMIN_CONTACT_EMAIL', 'admin@kohlibong.com');
+require_once __DIR__ . '/settings.php';
+
+$__siteSettings = site_settings();
+
+if (!defined('MEMBERSHIP_FEE')) {
+    define('MEMBERSHIP_FEE', (int) ($__siteSettings['membership_fee'] ?? 299));
+}
+if (!defined('SUBSCRIPTION_DAYS')) {
+    define('SUBSCRIPTION_DAYS', (int) ($__siteSettings['subscription_days'] ?? 30));
+}
+if (!defined('BANK_INFO')) {
+    define('BANK_INFO', (string) ($__siteSettings['bank_info'] ?? ''));
+}
+if (!defined('ADMIN_CONTACT_LINE')) {
+    define('ADMIN_CONTACT_LINE', (string) ($__siteSettings['contact_line'] ?? '@talaytrang'));
+}
+if (!defined('ADMIN_CONTACT_EMAIL')) {
+    define('ADMIN_CONTACT_EMAIL', (string) ($__siteSettings['contact_email'] ?? 'admin@kohlibong.com'));
+}
+
 define('EXPIRY_WARN_DAYS', 7);
 
 define('MAX_UPLOAD_BYTES', 5 * 1024 * 1024);

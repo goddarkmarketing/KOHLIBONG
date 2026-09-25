@@ -608,7 +608,78 @@
     },
   ];
 
+  function buildMemberHotelDetail(item) {
+    const amenities = (item.amenities && item.amenities.length)
+      ? item.amenities
+      : ['จากสมาชิกเกาะลิบง.com'];
+    const phone = item.phone || '';
+    const line = item.line_id || '';
+    const year = String(item.date || '').slice(0, 4) || String(new Date().getFullYear());
+    const address = item.location || 'เกาะลิบง จังหวัดตรัง';
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    const contactBits = [];
+    if (phone) contactBits.push(`โทร ${phone}`);
+    if (line) contactBits.push(`LINE ${line}`);
+    if (item.author) contactBits.push(`โดย ${item.author}`);
+
+    return {
+      isMember: true,
+      name: item.title,
+      opened: 'ลงประกาศโดยสมาชิก',
+      openedYear: year,
+      roomCount: 'สอบถามผู้ประกอบการ',
+      phone: phone || (line ? `LINE ${line}` : 'ติดต่อผ่านหน้าติดต่อเว็บไซต์'),
+      address,
+      mapUrl,
+      score: '',
+      scoreLabel: '',
+      reviewCount: '0',
+      scoreBreakdown: [],
+      reviewSnippets: [],
+      guestReviews: [],
+      highlights: amenities.slice(0, 4).map((label) => ({
+        icon: amenityIcon(label),
+        label,
+      })),
+      surroundings: [],
+      facilities: amenities.map((label) => ({
+        icon: amenityIcon(label),
+        label,
+      })),
+      facilityGroups: [
+        {
+          title: 'ข้อมูลจากสมาชิก',
+          items: amenities,
+        },
+        ...(contactBits.length
+          ? [{ title: 'ติดต่อ', items: contactBits }]
+          : []),
+      ],
+      policies: {},
+      about: item.description || item.text || 'รายละเอียดเพิ่มเติมสอบถามผู้ประกอบการโดยตรง',
+      faqs: [],
+      rooms: [
+        {
+          name: item.title || 'ห้องพัก / บริการ',
+          bed: item.price ? `ราคา ${item.price}` : 'สอบถามราคา',
+          photos: (item.gallery || item._gallery || []).length || 1,
+          amenities,
+        },
+      ],
+    };
+  }
+
+  function isMemberHotel(item) {
+    if (!item) return false;
+    if (item.source === 'member') return true;
+    const id = String(item.id || item._key || '');
+    return id.startsWith('live-hotel-');
+  }
+
   function getDetail(item) {
+    if (isMemberHotel(item)) {
+      return buildMemberHotelDetail(item);
+    }
     const idx = Number(item._index) || 0;
     return HOTEL_DETAILS[idx % HOTEL_DETAILS.length];
   }
@@ -727,6 +798,7 @@
       <h3 class="hd-section__title">รีวิวจากผู้เข้าพัก</h3>
       <div class="hd-reviews-summary">
         <div class="hd-reviews-summary__score">
+          <div class="hd-reviews-summary__stars" aria-hidden="true">${starRow(5)}</div>
           <strong>${esc(detail.score)}</strong>
           <span>/10</span>
           <div class="hd-rating__label">${esc(detail.scoreLabel)}</div>
@@ -876,21 +948,46 @@
     const related = opts.relatedHotels || [];
     const railHtml = opts.railHtml || '';
     const articleUrlFn = opts.articleUrl;
+    const isMember = !!detail.isMember;
 
-    const highlightHtml = `<div class="hd-highlights">${(detail.highlights || [])
-      .map(
-        (h) => `
+    const highlightHtml = (detail.highlights || []).length
+      ? `<div class="hd-highlights">${(detail.highlights || [])
+          .map(
+            (h) => `
       <div class="hd-highlight">
         <span class="hd-highlight__icon">${lucide(h.icon)}</span>
         <span class="hd-highlight__label">${esc(h.label)}</span>
       </div>`
-      )
-      .join('')}</div>`;
+          )
+          .join('')}</div>`
+      : '';
 
     const roomsHtml = (detail.rooms || [])
       .map((room, i) => roomCardHtml(room, item, contact, i))
       .join('');
     const quickFacilities = (detail.facilities || []).slice(0, 8);
+
+    const surroundingsHtml = (detail.surroundings || []).length
+      ? `<section class="hd-section">
+          <h3 class="hd-section__title">บริเวณโดยรอบ</h3>
+          ${listTwoCol(detail.surroundings || [], 'hd-poi')}
+          <a class="hd-section__link" href="${esc(detail.mapUrl || '#')}" target="_blank" rel="noopener noreferrer">ดูบนแผนที่</a>
+        </section>`
+      : '';
+
+    const facilitiesQuickHtml = quickFacilities.length
+      ? `<section class="hd-section">
+          <h3 class="hd-section__title">สิ่งอำนวยความสะดวก</h3>
+          ${listTwoCol(quickFacilities, 'hd-fac')}
+          <a class="hd-section__link" href="#hd-facilities">สิ่งอำนวยความสะดวกครบครัน</a>
+        </section>`
+      : '';
+
+    const reviewsHtml = !isMember && (detail.guestReviews || []).length
+      ? reviewsSectionHtml(detail)
+      : '';
+    const policiesBlock = !isMember ? policiesHtml(detail) : '';
+    const faqsBlock = faqsHtml(detail);
 
     const main = `
       <article class="hd-main">
@@ -916,28 +1013,19 @@
         ${galleryHtml(item)}
         ${highlightHtml}
 
-        <section class="hd-section">
-          <h3 class="hd-section__title">บริเวณโดยรอบ</h3>
-          ${listTwoCol(detail.surroundings || [], 'hd-poi')}
-          <a class="hd-section__link" href="${esc(detail.mapUrl || '#')}" target="_blank" rel="noopener noreferrer">ดูบนแผนที่</a>
-        </section>
-
-        <section class="hd-section">
-          <h3 class="hd-section__title">สิ่งอำนวยความสะดวก</h3>
-          ${listTwoCol(quickFacilities, 'hd-fac')}
-          <a class="hd-section__link" href="#hd-facilities">สิ่งอำนวยความสะดวกครบครัน</a>
-        </section>
+        ${surroundingsHtml}
+        ${facilitiesQuickHtml}
 
         <section class="hd-section hd-section--rooms">
-          <h3 class="hd-section__title">เลือกห้องพักของคุณ</h3>
+          <h3 class="hd-section__title">${isMember ? 'รายละเอียดบริการ' : 'เลือกห้องพักของคุณ'}</h3>
           <div class="hd-room-list">${roomsHtml}</div>
         </section>
 
-        ${reviewsSectionHtml(detail)}
+        ${reviewsHtml}
         ${facilityGroupsHtml(detail)}
-        ${policiesHtml(detail)}
+        ${policiesBlock}
         ${aboutHtml(detail, item)}
-        ${faqsHtml(detail)}
+        ${faqsBlock}
         ${recommendHotelsHtml(related, contact, articleUrlFn)}
       </article>`;
 

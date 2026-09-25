@@ -507,16 +507,16 @@ function preloadImage(url) {
     const thumbs = images.map((im, i) => {
       const more = i === 7 ? ' hotel-card__thumb--more' : '';
       const label = i === 7 ? '<span class="hotel-card__thumb-label">ดูทั้งหมด</span>' : '';
-      return `<button type="button" class="hotel-card__thumb${more}" data-gallery-id="${id}" data-index="${i}" aria-label="${i === 7 ? 'ดูทั้งหมด ' + title : im.alt}">
+      return `<div class="hotel-card__thumb${more}" aria-hidden="true">
         <img src="${im.thumb}" alt="" loading="lazy" decoding="async">${label}
-      </button>`;
+      </div>`;
     }).join('');
 
     return `
       <div class="hotel-card__gallery">
-        <button type="button" class="hotel-card__hero" data-gallery-id="${id}" data-index="0" aria-label="ดูภาพ ${title}">
-          <img src="${images[0].src}" alt="${title}" loading="lazy" decoding="async">
-        </button>
+        <div class="hotel-card__hero">
+          <img src="${images[0].src}" alt="${escHtml(title)}" loading="lazy" decoding="async">
+        </div>
         <div class="hotel-card__thumbs">${thumbs}</div>
       </div>`;
   }
@@ -1236,7 +1236,6 @@ function preloadImage(url) {
 
   function initContentLinks() {
     document.addEventListener('click', (e) => {
-      if (e.target.closest('[data-gallery-id]')) return;
       if (e.target.closest('.content-rail__item--ext')) return;
       if (e.target.closest('a.content-rail__item')) return;
 
@@ -1255,7 +1254,6 @@ function preloadImage(url) {
     document.addEventListener('keydown', (e) => {
       const card = e.target.closest('[data-content-section]');
       if (!card || (e.key !== 'Enter' && e.key !== ' ')) return;
-      if (e.target.closest('[data-gallery-id]')) return;
       e.preventDefault();
       location.href = articleUrl(card.dataset.contentSection, card.dataset.contentId, card.dataset.contentTitle || '');
     });
@@ -1441,33 +1439,144 @@ function preloadImage(url) {
 
   async function loadLiveListings() {
     const sources = [siteUrl('api/listings.php'), siteUrl('data/listings.json')];
-    const hotelFallback = IMG.hotelGalleries.map((gallery) => gallery[0]);
 
     for (const url of sources) {
       try {
         const res = await fetch(url);
         if (!res.ok) continue;
-
         const data = await res.json();
         if (!data?.ok) continue;
 
-        let loaded = false;
+        let changed = false;
+
         if (data.hotels?.length) {
-          loaded = renderLiveListingGrid('#hotelGrid', data.hotels, hotelFallback, 'ที่พัก', {
-            cardClass: 'hotel-card',
-            showDesc: true,
-          }) || loaded;
+          const mapped = data.hotels.map((item) => ({
+            id: `live-hotel-${item.id}`,
+            title: item.title,
+            location: item.location || '',
+            description: item.text || '',
+            price: item.price || '',
+            image: item.cover || '',
+            gallery: item.cover ? [item.cover] : null,
+            amenities: ['จากสมาชิก'],
+            stars: 4,
+            tag: 'สมาชิก',
+            source: 'member',
+            phone: item.phone || '',
+            line_id: item.line_id || '',
+            author: item.author || '',
+            date: item.date || '',
+            postId: item.id,
+          }));
+          const cms = contentRegistry.hotel || [];
+          const liveTitles = new Set(mapped.map((h) => String(h.title || '').trim().toLowerCase()));
+          const cmsUnique = cms.filter((h) => !liveTitles.has(String(h.title || '').trim().toLowerCase()));
+          const merged = [...mapped, ...cmsUnique];
+          renderSiteHotels(merged, IMG.hotelGalleries);
+          changed = true;
         }
+
         if (data.restaurants?.length) {
-          loaded = renderLiveListingGrid('#restaurantGrid', data.restaurants, IMG.restaurants, 'แนะนำ') || loaded;
+          const mapped = data.restaurants.map((item) => ({
+            id: `live-resto-${item.id}`,
+            title: item.title,
+            subtitle: [item.location, item.author].filter(Boolean).join(' · ') || item.text?.slice(0, 80) || '',
+            description: item.text || '',
+            tag: 'สมาชิก',
+            image: item.cover || '',
+            source: 'member',
+            phone: item.phone || '',
+            line_id: item.line_id || '',
+            author: item.author || '',
+            location: item.location || '',
+            price: item.price || '',
+            postId: item.id,
+          }));
+          const cms = contentRegistry.restaurant || [];
+          const liveTitles = new Set(mapped.map((h) => String(h.title || '').trim().toLowerCase()));
+          const cmsUnique = cms.filter((h) => !liveTitles.has(String(h.title || '').trim().toLowerCase()));
+          renderSiteRestaurants([...mapped, ...cmsUnique], IMG.restaurants);
+          changed = true;
         }
+
         if (data.tours?.length) {
-          loaded = renderLiveTours(data.tours, IMG.tours) || loaded;
+          const mapped = data.tours.map((item) => ({
+            id: `live-tour-${item.id}`,
+            title: item.title,
+            subtitle: item.location || item.author || '',
+            description: item.text || '',
+            badge: 'สมาชิก',
+            badge_type: 'green',
+            price: item.price || '',
+            image: item.cover || '',
+            source: 'member',
+            phone: item.phone || '',
+            line_id: item.line_id || '',
+            author: item.author || '',
+            location: item.location || '',
+            postId: item.id,
+          }));
+          const cms = contentRegistry.tour || [];
+          const liveTitles = new Set(mapped.map((h) => String(h.title || '').trim().toLowerCase()));
+          const cmsUnique = cms.filter((h) => !liveTitles.has(String(h.title || '').trim().toLowerCase()));
+          renderSiteTours([...mapped, ...cmsUnique], IMG.tours);
+          changed = true;
         }
-        if (loaded) return;
+
+        if (changed) {
+          initLucide();
+          return true;
+        }
       } catch (_) {
         /* ลองแหล่งถัดไป */
       }
+    }
+    return false;
+  }
+
+  async function applySiteSettings() {
+    try {
+      const res = await fetch(siteUrl('api/site-settings.php'));
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data?.ok || !data.settings) return;
+      const s = data.settings;
+
+      const setText = (sel, val) => {
+        if (!val) return;
+        $$(sel).forEach((el) => {
+          el.textContent = val;
+        });
+      };
+
+      setText('[data-setting="pier_name"]', s.pier_name);
+      setText('[data-setting="office_address"]', s.office_address);
+      setText('[data-setting="office_hours"]', s.office_hours);
+      setText('[data-setting="contact_line"]', s.contact_line);
+      setText('[data-setting="tour_contact_1"]', s.tour_contact_1);
+      setText('[data-setting="tour_contact_2"]', s.tour_contact_2);
+      setText('[data-setting="boat_contact_1"]', s.boat_contact_1);
+      setText('[data-setting="hero_caption"]', s.hero_caption);
+      setText('[data-setting="footer_tagline"]', s.footer_tagline);
+
+      if (s.line_url && s.line_url !== '#') {
+        $$('a[data-setting-href="line"]').forEach((a) => {
+          a.href = s.line_url;
+        });
+      }
+
+      if (s.map_lat && s.map_lng) {
+        const map = $('#contactMap');
+        if (map) {
+          map.dataset.src = `https://maps.google.com/maps?q=${encodeURIComponent(s.map_lat)},${encodeURIComponent(s.map_lng)}&hl=th&z=16&output=embed`;
+          if (map.src) map.src = map.dataset.src;
+        }
+        $$('a[data-setting-href="map"]').forEach((a) => {
+          a.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.map_lat)},${encodeURIComponent(s.map_lng)}`;
+        });
+      }
+    } catch (_) {
+      /* ignore */
     }
   }
 
@@ -1501,10 +1610,13 @@ function preloadImage(url) {
 
   function renderSiteTours(items, fallbackImgs) {
     const grid = $('#tourGrid');
-    if (!grid) return false;
-    if (!items?.length) { grid.innerHTML = ''; return true; }
+    if (!items?.length) {
+      if (grid) grid.innerHTML = '';
+      return true;
+    }
 
     registerContentSection('tour', items, fallbackImgs);
+    if (!grid) return true;
 
     grid.innerHTML = (contentRegistry.tour || []).map((item, k) => {
       const cover = item._image || item.image || fallbackImgs[k % fallbackImgs.length];
@@ -1563,8 +1675,10 @@ function preloadImage(url) {
 
   function renderSiteHotels(items, fallbackGalleries) {
     const grid = $('#hotelGrid');
-    if (!grid) return false;
-    if (!items?.length) { grid.innerHTML = ''; return true; }
+    if (!items?.length) {
+      if (grid) grid.innerHTML = '';
+      return true;
+    }
 
     registerContentSection('hotel', items, fallbackGalleries.map((g) => g[0]), (item, k, fb) => {
       const gallery = (item.gallery?.length ? item.gallery : (item.image ? [item.image] : null))
@@ -1572,6 +1686,7 @@ function preloadImage(url) {
         || [];
       return { ...item, gallery, image: item.image || gallery[0] || fb[k % fb.length] };
     });
+    if (!grid) return true;
 
     grid.innerHTML = items.map((item, k) => {
       const gallery = (item.gallery?.length ? item.gallery : (item.image ? [item.image] : null))
@@ -1601,10 +1716,13 @@ function preloadImage(url) {
 
   function renderSiteRestaurants(items, fallbackImgs) {
     const grid = $('#restaurantGrid');
-    if (!grid) return false;
-    if (!items?.length) { grid.innerHTML = ''; return true; }
+    if (!items?.length) {
+      if (grid) grid.innerHTML = '';
+      return true;
+    }
 
     registerContentSection('restaurant', items, fallbackImgs);
+    if (!grid) return true;
 
     grid.innerHTML = (contentRegistry.restaurant || []).map((item, k) => {
       const cover = item._image || item.image || fallbackImgs[k % fallbackImgs.length];
@@ -1819,11 +1937,12 @@ function preloadImage(url) {
     }));
 
     if (paint()) {
-      loadSiteContent().then(() => paint());
+      loadSiteContent().then(() => loadLiveListings().then(() => paint()));
       return;
     }
 
     await loadSiteContent();
+    await loadLiveListings();
     if (paint()) return;
 
     root.innerHTML = `<div class="article-page__missing">
@@ -1844,8 +1963,10 @@ function preloadImage(url) {
     });
   } else {
     renderFallbackGrids();
-    loadSiteContent();
+    loadSiteContent().then(() => loadLiveListings());
   }
+
+  applySiteSettings();
 
   /* ---------- HOTEL MINI SLIDER ---------- */
   (function hotelMiniSlider() {
@@ -1863,7 +1984,7 @@ function preloadImage(url) {
     });
   })();
 
-  /* ---------- HOTEL GALLERY LIGHTBOX ---------- */
+  /* ---------- HOTEL GALLERY LIGHTBOX (kept for markup; card clicks go to detail) ---------- */
   (function hotelGalleryLightbox() {
     const lb = $('#galleryLightbox');
     if (!lb) return;
@@ -1882,15 +2003,6 @@ function preloadImage(url) {
       lbCaption.textContent = `${currentIndex + 1} / ${images.length} — ${im.alt}`;
     }
 
-    function open(id, index) {
-      if (!hotelGalleries[id]) return;
-      currentId = id;
-      currentIndex = index;
-      update();
-      lb.hidden = false;
-      document.body.style.overflow = 'hidden';
-    }
-
     function close() {
       lb.hidden = true;
       document.body.style.overflow = '';
@@ -1898,23 +2010,17 @@ function preloadImage(url) {
 
     function next() {
       const images = hotelGalleries[currentId];
+      if (!images) return;
       currentIndex = (currentIndex + 1) % images.length;
       update();
     }
 
     function prev() {
       const images = hotelGalleries[currentId];
+      if (!images) return;
       currentIndex = (currentIndex - 1 + images.length) % images.length;
       update();
     }
-
-    $('#hotelGrid')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-gallery-id]');
-      if (!btn) return;
-      e.preventDefault();
-      e.stopPropagation();
-      open(btn.dataset.galleryId, Number(btn.dataset.index));
-    });
 
     $('.gallery-lightbox__close', lb)?.addEventListener('click', close);
     $('.gallery-lightbox__next', lb)?.addEventListener('click', next);

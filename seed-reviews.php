@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_setup_allowed('seed-reviews.php');
 
 /** @return list<array<string, mixed>> */
 function sample_reviews_data(): array

@@ -66,7 +66,7 @@ admin_header('รายการชำระเงิน', 'payments', 'ตร�
             <td class="at-col at-col--short"><?= e(member_type_th($r['member_type'])) ?></td>
             <td class="at-col at-col--short"><?= number_format((float) $r['amount'], 0) ?> บาท</td>
             <td class="at-col at-col--short">
-              <a class="admin-table__link" href="../<?= e($r['slip_path']) ?>" target="_blank" rel="noopener">ดูสลิป</a>
+              <a class="admin-table__link" href="<?= e(payment_slip_url((int) $r['id'])) ?>" target="_blank" rel="noopener">ดูสลิป</a>
             </td>
             <td class="at-col at-col--short"><?= status_badge($r['status']) ?></td>
             <td class="at-col at-col--actions">

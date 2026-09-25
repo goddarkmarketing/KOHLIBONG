@@ -83,6 +83,7 @@ function admin_header(string $title, string $active = 'dashboard', ?string $subt
       <?= admin_nav_item('payments.php', 'รายการชำระเงิน', 'receipt', $active, 'payments') ?>
       <?= admin_nav_item('members.php', 'รายชื่อสมาชิก', 'users', $active, 'members') ?>
       <?= admin_nav_item('posts.php', 'โพสต์ / รีวิว', 'file-check', $active, 'posts') ?>
+      <?= admin_nav_item('settings.php', 'ตั้งค่าระบบ', 'settings', $active, 'settings') ?>
       <?= admin_nav_item('backup.php', 'สำรองข้อมูล', 'archive', $active, 'backup') ?>
 
       <p class="admin-nav__group">เนื้อหาหน้าเว็บ</p>
@@ -250,6 +251,75 @@ function approve_post(int $postId, int $adminId, bool $approve, ?string $note = 
     export_public_content_json();
 }
 
+function unhide_post(int $postId, int $adminId, ?string $note = null): void
+{
+    $note = $note ?: 'เผยแพร่ซ้ำโดยแอดมิน';
+    $stmt = db()->prepare("UPDATE posts SET status='approved', admin_note=?, reviewed_by=?, reviewed_at=NOW() WHERE id=? AND status='hidden'");
+    $stmt->execute([$note, $adminId, $postId]);
+    if ($stmt->rowCount() === 0) {
+        throw new RuntimeException('ไม่พบโพสต์ที่ถูกซ่อน');
+    }
+    export_public_content_json();
+}
+
+function delete_post(int $postId): void
+{
+    $stmt = db()->prepare('SELECT cover_image FROM posts WHERE id = ? LIMIT 1');
+    $stmt->execute([$postId]);
+    $row = $stmt->fetch();
+    if (!$row) {
+        throw new RuntimeException('ไม่พบโพสต์');
+    }
+    db()->prepare('DELETE FROM posts WHERE id = ?')->execute([$postId]);
+    if (!empty($row['cover_image'])) {
+        $path = BASE_PATH . '/' . ltrim((string) $row['cover_image'], '/');
+        if (is_file($path)) {
+            @unlink($path);
+        }
+    }
+    export_public_content_json();
+}
+
+function admin_update_post(int $postId, array $data): void
+{
+    $stmt = db()->prepare('SELECT id, post_type FROM posts WHERE id = ? LIMIT 1');
+    $stmt->execute([$postId]);
+    $post = $stmt->fetch();
+    if (!$post) {
+        throw new RuntimeException('ไม่พบโพสต์');
+    }
+
+    $title = trim((string) ($data['title'] ?? ''));
+    $content = trim((string) ($data['content'] ?? ''));
+    if ($title === '' || $content === '') {
+        throw new RuntimeException('กรอกหัวข้อและเนื้อหา');
+    }
+
+    if ($post['post_type'] === 'review') {
+        db()->prepare('UPDATE posts SET title=?, content=?, booking_place=?, booking_date=?, guest_name=?, rating=? WHERE id=?')
+            ->execute([
+                $title,
+                $content,
+                trim((string) ($data['booking_place'] ?? '')) ?: null,
+                trim((string) ($data['booking_date'] ?? '')) ?: null,
+                trim((string) ($data['guest_name'] ?? '')) ?: null,
+                max(1, min(5, (int) ($data['rating'] ?? 5))),
+                $postId,
+            ]);
+    } else {
+        db()->prepare('UPDATE posts SET title=?, content=?, location=?, price=? WHERE id=?')
+            ->execute([
+                $title,
+                $content,
+                trim((string) ($data['location'] ?? '')) ?: null,
+                trim((string) ($data['price'] ?? '')) ?: null,
+                $postId,
+            ]);
+    }
+
+    export_public_content_json();
+}
+
 function hide_post(int $postId, int $adminId, ?string $note = null): void
 {
     $note = $note ?: 'ถอนการเผยแพร่โดยแอดมิน';
@@ -286,6 +356,76 @@ function admin_extend_member(int $userId, int $days, int $adminId): void
 
     db()->prepare("UPDATE users SET status='active', subscription_start=?, subscription_end=? WHERE id=?")
         ->execute([$start, $newEnd, $userId]);
+}
+
+function admin_set_member_status(int $userId, string $status): void
+{
+    $allowed = ['active', 'expired', 'rejected', 'pending_approval'];
+    if (!in_array($status, $allowed, true)) {
+        throw new RuntimeException('สถานะไม่ถูกต้อง');
+    }
+    $stmt = db()->prepare("UPDATE users SET status=? WHERE id=? AND role='member'");
+    $stmt->execute([$status, $userId]);
+    if ($stmt->rowCount() === 0) {
+        throw new RuntimeException('ไม่พบสมาชิก');
+    }
+}
+
+function admin_reset_member_password(int $userId, string $password): void
+{
+    if (strlen($password) < 6) {
+        throw new RuntimeException('รหัสผ่านอย่างน้อย 6 ตัวอักษร');
+    }
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = db()->prepare("UPDATE users SET password_hash=? WHERE id=? AND role='member'");
+    $stmt->execute([$hash, $userId]);
+    if ($stmt->rowCount() === 0) {
+        throw new RuntimeException('ไม่พบสมาชิก');
+    }
+}
+
+function admin_delete_member(int $userId): void
+{
+    $pdo = db();
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE id=? AND role='member' LIMIT 1");
+    $stmt->execute([$userId]);
+    if (!$stmt->fetch()) {
+        throw new RuntimeException('ไม่พบสมาชิก');
+    }
+
+    $pdo->beginTransaction();
+    try {
+        $covers = $pdo->prepare('SELECT cover_image FROM posts WHERE user_id=?');
+        $covers->execute([$userId]);
+        foreach ($covers->fetchAll() as $row) {
+            if (!empty($row['cover_image'])) {
+                $path = BASE_PATH . '/' . ltrim((string) $row['cover_image'], '/');
+                if (is_file($path)) {
+                    @unlink($path);
+                }
+            }
+        }
+        $slips = $pdo->prepare('SELECT slip_path FROM payments WHERE user_id=?');
+        $slips->execute([$userId]);
+        foreach ($slips->fetchAll() as $row) {
+            if (!empty($row['slip_path'])) {
+                $path = BASE_PATH . '/' . ltrim((string) $row['slip_path'], '/');
+                if (is_file($path)) {
+                    @unlink($path);
+                }
+            }
+        }
+        $pdo->prepare('DELETE FROM posts WHERE user_id=?')->execute([$userId]);
+        $pdo->prepare('DELETE FROM payments WHERE user_id=?')->execute([$userId]);
+        $pdo->prepare('DELETE FROM business_profiles WHERE user_id=?')->execute([$userId]);
+        $pdo->prepare('DELETE FROM users WHERE id=?')->execute([$userId]);
+        $pdo->commit();
+    } catch (Throwable $ex) {
+        $pdo->rollBack();
+        throw $ex;
+    }
+
+    export_public_content_json();
 }
 
 function admin_get_post(int $postId): ?array

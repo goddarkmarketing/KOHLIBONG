@@ -13,3 +13,7 @@ define('DB_PASS', 'รหัสผ่านฐานข้อมูล');
 
 // โดเมนราก (public_html) ไม่ต้องกำหนด — ระบบจะ detect เป็น '' อัตโนมัติ
 // define('SITE_BASE', '');
+
+// ความปลอดภัยบน production — แนะนำตั้งทั้งคู่เป็น false
+define('ALLOW_SETUP', false);          // ปิด setup.php / install-*.php
+define('SHOW_DEMO_ACCOUNTS', false);   // ซ่อนบัญชีทดสอบบนหน้า login

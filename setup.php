@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_setup_allowed('setup.php');
 
 $pageTitle = $pageTitle ?? 'ติดตั้งระบบ';
 $done = false;
@@ -51,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         file_put_contents(UPLOAD_DIR . '/.htaccess', "php_flag engine off\n");
+        site_write_install_lock();
         $done = true;
     } catch (Throwable $ex) {
         $error = $ex->getMessage();

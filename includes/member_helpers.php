@@ -28,16 +28,27 @@ function member_get_business_profile(int $userId): ?array
 
 function post_public_url(array $post): string
 {
-    if ($post['status'] !== 'approved') {
+    if (($post['status'] ?? '') !== 'approved') {
         return '';
     }
-    if ($post['post_type'] === 'review') {
-        return SITE_BASE . '/index.html#reviews';
-    }
-    return match ($post['post_type']) {
-        'hotel' => SITE_BASE . '/index.html#hotels',
-        'restaurant' => SITE_BASE . '/index.html#restaurants',
-        default => SITE_BASE . '/index.html#tours',
+
+    $id = (int) ($post['id'] ?? 0);
+    $title = (string) ($post['title'] ?? '');
+    $q = static function (string $section, string $contentId, string $title): string {
+        $params = http_build_query([
+            'section' => $section,
+            'id' => $contentId,
+            'title' => $title,
+        ]);
+        return SITE_BASE . '/article.html?' . $params;
+    };
+
+    return match ($post['post_type'] ?? '') {
+        'review' => SITE_BASE . '/index.html#reviews',
+        'hotel' => $q('hotel', 'live-hotel-' . $id, $title),
+        'restaurant' => $q('restaurant', 'live-resto-' . $id, $title),
+        'tour' => $q('tour', 'live-tour-' . $id, $title),
+        default => SITE_BASE . '/index.html',
     };
 }
 
@@ -63,6 +74,13 @@ function render_topbar_subscription(array $user): string
             . $daysLine('clock', 'รออนุมัติบัญชี')
             . '<span class="mapp-sub-badge__pack">' . e($packLabel) . ' · ' . e($feeLabel) . '</span>'
             . '</div>';
+    }
+
+    if ($user['status'] === 'rejected') {
+        return '<a href="renew.php" class="mapp-sub-badge mapp-sub-badge--bad">'
+            . $daysLine('alert-circle', 'ถูกปฏิเสธ — ส่งสลิปใหม่')
+            . '<span class="mapp-sub-badge__pack">' . e($packLabel) . '</span>'
+            . '</a>';
     }
 
     if ($days === null) {
@@ -203,4 +221,62 @@ function business_type_label(string $type): string
         'other' => 'อื่น ๆ',
         default => $type,
     };
+}
+
+function serve_payment_slip(int $paymentId): never
+{
+    $user = current_user();
+    if (!$user) {
+        http_response_code(403);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'กรุณาเข้าสู่ระบบ';
+        exit;
+    }
+
+    $stmt = db()->prepare('SELECT id, user_id, slip_path FROM payments WHERE id = ? LIMIT 1');
+    $stmt->execute([$paymentId]);
+    $pay = $stmt->fetch();
+    if (!$pay) {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'ไม่พบสลิป';
+        exit;
+    }
+
+    $isOwner = (int) $pay['user_id'] === (int) $user['id'];
+    $isAdmin = ($user['role'] ?? '') === 'admin';
+    if (!$isOwner && !$isAdmin) {
+        http_response_code(403);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'ไม่มีสิทธิ์ดูสลิปนี้';
+        exit;
+    }
+
+    $rel = ltrim((string) $pay['slip_path'], '/');
+    if ($rel === '' || str_contains($rel, '..')) {
+        http_response_code(404);
+        exit('ไม่พบไฟล์');
+    }
+
+    $path = BASE_PATH . '/' . $rel;
+    $realBase = realpath(SLIP_DIR);
+    $realFile = realpath($path);
+    if ($realBase === false || $realFile === false || !str_starts_with($realFile, $realBase) || !is_file($realFile)) {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'ไม่พบไฟล์สลิป';
+        exit;
+    }
+
+    $mime = mime_content_type($realFile) ?: 'application/octet-stream';
+    if (!in_array($mime, ['image/jpeg', 'image/png', 'image/webp', 'image/gif'], true)) {
+        $mime = 'application/octet-stream';
+    }
+
+    header('Content-Type: ' . $mime);
+    header('Content-Length: ' . (string) filesize($realFile));
+    header('X-Content-Type-Options: nosniff');
+    header('Cache-Control: private, no-store');
+    readfile($realFile);
+    exit;
 }

@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fullName = trim($_POST['full_name'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $memberType = $_POST['member_type'] ?? 'reviewer';
-        $amount = (float) ($_POST['amount'] ?? MEMBERSHIP_FEE);
+        $amount = normalize_membership_amount($_POST['amount'] ?? MEMBERSHIP_FEE);
         $transferDate = parse_date_picker('transfer', required: false);
 
         if (!$email || !$fullName || strlen($password) < 6) {
@@ -80,7 +80,7 @@ member_header('สมัครสมาชิก');
 ?>
 <section class="member-card member-card--wide">
   <h1>สมัครสมาชิก</h1>
-  <p class="member-lead">ค่าสมาชิก <?= number_format(MEMBERSHIP_FEE) ?> บาท / 30 วัน — อัปโหลดสลิปโอนเงิน แอดมินจะอนุมัติก่อนใช้งาน</p>
+  <p class="member-lead">ค่าสมาชิก <?= number_format(MEMBERSHIP_FEE) ?> บาท / <?= SUBSCRIPTION_DAYS ?> วัน — อัปโหลดสลิปโอนเงิน แอดมินจะอนุมัติก่อนใช้งาน</p>
 
   <div class="type-tabs">
     <a href="?type=reviewer" class="type-tab <?= $type === 'reviewer' ? 'is-active' : '' ?>">ประเภท 1: รีวิวเท่านั้น</a>
@@ -123,12 +123,12 @@ member_header('สมัครสมาชิก');
 
     <h3 class="form-section-title">ชำระค่าสมาชิก</h3>
     <div class="bank-box">
-      <strong>โอนเงิน <?= number_format(MEMBERSHIP_FEE) ?> บาท / 30 วัน</strong><br>
+      <strong>โอนเงิน <?= number_format(MEMBERSHIP_FEE) ?> บาท / <?= SUBSCRIPTION_DAYS ?> วัน</strong><br>
       <?= e(BANK_INFO) ?><br>
       อัปโหลดสลิปด้านล่าง — แอดมินจะตรวจสอบก่อนเปิดใช้งาน
     </div>
     <div class="form-grid">
-      <label>จำนวนเงิน (บาท)<input type="number" name="amount" step="0.01" value="<?= MEMBERSHIP_FEE ?>" required /></label>
+      <label>จำนวนเงิน (บาท)<input type="number" name="amount" step="0.01" value="<?= MEMBERSHIP_FEE ?>" readonly required /><small class="field__hint">ยอดคงที่ตามค่าสมาชิก</small></label>
       <div class="field span-2">
         <span class="field__label">วันที่โอน</span>
         <?= render_date_picker('transfer', date('Y-m-d')) ?>

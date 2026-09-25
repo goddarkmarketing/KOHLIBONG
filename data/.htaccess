@@ -1,0 +1,4 @@
+# Deny sensitive files; allow public JSON used by the frontend
+<FilesMatch "^(site-settings\.json|install\.lock)$">
+  Require all denied
+</FilesMatch>

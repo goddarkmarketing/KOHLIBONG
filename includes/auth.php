@@ -53,6 +53,7 @@ function attempt_login(string $email, string $password): ?array
     if (!$user || !password_verify($password, $user['password_hash'])) {
         return null;
     }
+    session_regenerate_id(true);
     $_SESSION['user_id'] = (int) $user['id'];
     return $user;
 }
@@ -74,9 +75,8 @@ function login_redirect(array $user): never
         redirect(MEMBER_BASE . '/dashboard.php');
     }
     if ($user['status'] === 'rejected') {
-        flash('error', 'บัญชีถูกปฏิเสธ กรุณาติดต่อแอดมิน');
-        logout_user();
-        redirect(MEMBER_BASE . '/login.php');
+        flash('error', 'บัญชีถูกปฏิเสธ — อัปโหลดสลิปใหม่เพื่อขอเปิดใช้งานอีกครั้ง หรือติดต่อแอดมิน');
+        redirect(MEMBER_BASE . '/renew.php');
     }
     if (!subscription_valid($user)) {
         flash('error', 'สมาชิกหมดอายุแล้ว กรุณาชำระเงินต่ออายุ');
@@ -114,8 +114,8 @@ function require_active_member(): array
         redirect(MEMBER_BASE . '/dashboard.php');
     }
     if ($user['status'] === 'rejected') {
-        flash('error', 'บัญชีถูกปฏิเสธ กรุณาติดต่อแอดมิน');
-        redirect(MEMBER_BASE . '/login.php');
+        flash('error', 'บัญชีถูกปฏิเสธ — กรุณาอัปโหลดสลิปใหม่หรือติดต่อแอดมิน');
+        redirect(MEMBER_BASE . '/renew.php');
     }
     if (!subscription_valid($user)) {
         db()->prepare("UPDATE users SET status = 'expired' WHERE id = ? AND role = 'member'")->execute([$user['id']]);

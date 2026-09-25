@@ -71,7 +71,7 @@
     <div class="hero__content">
       <p class="hero__eyebrow">จังหวัดตรัง · ทะเลอันดามัน</p>
       <h1 class="hero__title">เกาะลิบง</h1>
-      <p class="hero__subtitle">วิถีชุมชนที่สวยงาม</p>
+      <p class="hero__subtitle" data-setting="hero_caption">วิถีชุมชนที่สวยงาม</p>
       <div class="hero__actions">
         <a href="#tours" class="btn btn--primary btn--lg">ดูแพ็คเกจทัวร์</a>
         <a href="#boats" class="btn btn--ghost btn--lg">จองตั๋วเรือ</a>
@@ -212,7 +212,7 @@
     <div class="container">
       <div class="contact__grid">
         <div class="contact__col reveal">
-          <h3 class="contact__title">ท่าเรือหาดยาว</h3>
+          <h3 class="contact__title" data-setting="pier_name">ท่าเรือหาดยาว</h3>
           <div class="contact__map">
             <iframe
               id="contactMap"
@@ -221,7 +221,7 @@
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               allowfullscreen=""></iframe>
-            <a class="contact__map-link" href="https://www.google.com/maps/search/?api=1&query=7.309793,99.40204" target="_blank" rel="noopener">เปิดใน Google Maps</a>
+            <a class="contact__map-link" data-setting-href="map" href="https://www.google.com/maps/search/?api=1&query=7.309793,99.40204" target="_blank" rel="noopener">เปิดใน Google Maps</a>
           </div>
         </div>
 
@@ -229,13 +229,13 @@
           <h4 class="contact__sub">มั่นใจได้ทุกทริป</h4>
           <p class="contact__desc">เรามีออฟฟิศตั้งอยู่จริงที่ท่าเทอเกาะกันตัง เปิดบริการทุกวัน คุณสามารถนัดเข้ามาดูเรือก่อนตกลงจองได้</p>
           <ul class="contact__list">
-            <li><i data-lucide="map-pin" class="icon"></i><span>ที่ตั้งออฟฟิศ<br><small>ทะเลตรัง ออกฟ คอม 54/43 หมู่ 4 ตำบลไม้ฝาด อำเภอกันตัง จังหวัดตรัง 92150</small></span></li>
-            <li><i data-lucide="clock" class="icon"></i><span>เวลาทำการ<br><small>เปิดบริการทุกวัน 07:00 – 21:00 น.</small></span></li>
-            <li><i data-lucide="phone" class="icon"></i><span>โทรหาเรา<br><small>091-0401234</small></span></li>
-            <li><i data-lucide="message-circle" class="icon"></i><span>LINE Official<br><small>@talaytrang</small></span></li>
+            <li><i data-lucide="map-pin" class="icon"></i><span>ที่ตั้งออฟฟิศ<br><small data-setting="office_address">ทะเลตรัง ออกฟ คอม 54/43 หมู่ 4 ตำบลไม้ฝาด อำเภอกันตัง จังหวัดตรัง 92150</small></span></li>
+            <li><i data-lucide="clock" class="icon"></i><span>เวลาทำการ<br><small data-setting="office_hours">เปิดบริการทุกวัน 07:00 – 21:00 น.</small></span></li>
+            <li><i data-lucide="phone" class="icon"></i><span>โทรหาเรา<br><small data-setting="boat_contact_1">คุณอเล็กซ์ 091-0401234</small></span></li>
+            <li><i data-lucide="message-circle" class="icon"></i><span>LINE Official<br><small data-setting="contact_line">@talaytrang</small></span></li>
           </ul>
           <div class="contact__btns">
-            <a href="https://line.me/R/ti/p/@talaytrang" class="btn btn--green" target="_blank" rel="noopener"><i data-lucide="message-circle" class="icon"></i> ADD LINE</a>
+            <a href="https://line.me/R/ti/p/@talaytrang" data-setting-href="line" class="btn btn--green" target="_blank" rel="noopener"><i data-lucide="message-circle" class="icon"></i> ADD LINE</a>
             <a href="contact.html" class="btn btn--ghost-dark">ดูข้อมูลติดต่อ</a>
           </div>
         </div>
@@ -283,16 +283,16 @@
       <div class="footer__col">
         <h5 class="footer__h">ติดต่อจองทัวร์บนเกาะลิบง</h5>
         <ul class="footer__plain">
-          <li>คุณกิว 095-4404646</li>
-          <li>คุณทราย 095-4404747</li>
+          <li data-setting="tour_contact_1">คุณกิว 095-4404646</li>
+          <li data-setting="tour_contact_2">คุณทราย 095-4404747</li>
         </ul>
         <h5 class="footer__h footer__h--gap">ติดต่อจองเรือ</h5>
         <ul class="footer__plain">
-          <li>คุณอเล็กซ์ 091-0401234</li>
+          <li data-setting="boat_contact_1">คุณอเล็กซ์ 091-0401234</li>
         </ul>
       </div>
       <div class="footer__col footer__col--brand">
-        <p class="footer__tag">เกาะลิบง วิถีชุมชนที่มีความสุข</p>
+        <p class="footer__tag" data-setting="footer_tagline">เกาะลิบง วิถีชุมชนที่มีความสุข</p>
         <div class="brand__logo brand__logo--lg"><span class="brand__koh">KOH</span><span class="brand__libong">LIBONG</span></div>
         <nav class="social social--footer">
           <a href="#" aria-label="Facebook" class="social__link s-fb"><svg class="social__icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_setup_allowed('install-demo-user.php');
 
 $email = $argv[1] ?? 'member@kohlibong.com';
 $pass = $argv[2] ?? 'member123';
